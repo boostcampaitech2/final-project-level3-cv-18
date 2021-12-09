@@ -64,6 +64,7 @@ def main():
 main()
 
 
+
 # 기존에 있던 로그인 코드 / 로깅 기능을 위해 남겨두나 로깅 기능 추가는 시간제약으로 어려울 듯...
 # @cache_on_button_press('Authenticate')
 # def authenticate(password) ->bool:
