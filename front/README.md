@@ -4,7 +4,7 @@
 
 ## 환경 설정
 
-- OCR은 다른 가상환경 이름으로 대체 가능
+- 가상환경 이름 : OCR
 ```
 conda create -n OCR
 conda activate OCR
