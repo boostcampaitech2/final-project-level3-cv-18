@@ -15,3 +15,8 @@ pip install -r requirements.txt
 ```
 streamlit run app.py
 ```
+
+## Aistages에서 Streamlit 실행
+```
+nohup run .py —server.port=6006 —server.runOnSave=true
+```
