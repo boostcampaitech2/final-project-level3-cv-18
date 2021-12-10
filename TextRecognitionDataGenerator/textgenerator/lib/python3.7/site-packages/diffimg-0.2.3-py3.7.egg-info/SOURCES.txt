@@ -1,0 +1,12 @@
+README.md
+setup.cfg
+setup.py
+diffimg/__init__.py
+diffimg/__main__.py
+diffimg/diff.py
+diffimg/test.py
+diffimg.egg-info/PKG-INFO
+diffimg.egg-info/SOURCES.txt
+diffimg.egg-info/dependency_links.txt
+diffimg.egg-info/requires.txt
+diffimg.egg-info/top_level.txt

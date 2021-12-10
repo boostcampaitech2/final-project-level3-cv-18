@@ -1,0 +1,3 @@
+[console_scripts]
+trdg = trdg.run:main
+

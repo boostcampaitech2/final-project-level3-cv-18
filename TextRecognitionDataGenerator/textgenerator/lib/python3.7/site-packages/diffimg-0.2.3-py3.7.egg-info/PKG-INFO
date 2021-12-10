@@ -1,0 +1,12 @@
+Metadata-Version: 1.1
+Name: diffimg
+Version: 0.2.3
+Summary: Get the % difference in images + generate a diff image
+Home-page: https://github.com/nicolashahn/python-image-diff
+Author: Nicolas Hahn
+Author-email: nicolas@stonespring.org
+License: UNKNOWN
+Download-URL: https://github.com/nicolashahn/python-image-diff/archive/v0.2.3.tar.gz
+Description: UNKNOWN
+Keywords: diff,difference,image,test,testing
+Platform: UNKNOWN
