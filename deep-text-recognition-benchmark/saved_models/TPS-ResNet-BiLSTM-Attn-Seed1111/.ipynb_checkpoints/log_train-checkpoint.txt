@@ -1,0 +1,12 @@
+[1/300000] Train loss: 3.67318, Valid loss: 3.59226, Elapsed_time: 0.43317
+Current_accuracy : 0.000, Current_norm_ED  : 0.00
+Best_accuracy    : 0.000, Best_norm_ED     : 0.00
+--------------------------------------------------------------------------------
+Ground Truth              | Prediction                | Confidence Score & T/F
+--------------------------------------------------------------------------------
+m9697c                    | z222222qqqqqqqqqqqzzzzzzz | 0.0000	False
+s80783                    |                           | 0.0000	False
+gv7098                    |                           | 0.0000	False
+b37846                    | x                         | 0.0342	False
+m9160c                    | xxxxxxxxxxxxxxxxxxxxxxxxx | 0.0000	False
+--------------------------------------------------------------------------------
