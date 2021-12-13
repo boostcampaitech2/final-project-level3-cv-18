@@ -12,6 +12,8 @@ $ python myrun.py \
     * nospace: 이미지에 " "(공백문자) 를 포함하지 않음.
     * dash: 이미지에 "-" 를 하나 이상 포함
     * angle: 이미지 기울기를 (-angle ~ +angle) 만큼 돌림.
+    * blur: 모든 이미지를 흐리게 뽑기
+    * blur_power: 이미지를 흐리게 하는 정도
 
 # TextRecognitionDataGenerator [![TravisCI](https://travis-ci.org/Belval/TextRecognitionDataGenerator.svg?branch=master)](https://travis-ci.org/Belval/TextRecognitionDataGenerator) [![PyPI version](https://badge.fury.io/py/trdg.svg)](https://badge.fury.io/py/trdg) [![codecov](https://codecov.io/gh/Belval/TextRecognitionDataGenerator/branch/master/graph/badge.svg)](https://codecov.io/gh/Belval/TextRecognitionDataGenerator) [![Documentation Status](https://readthedocs.org/projects/textrecognitiondatagenerator/badge/?version=latest)](https://textrecognitiondatagenerator.readthedocs.io/en/latest/?badge=latest)
 

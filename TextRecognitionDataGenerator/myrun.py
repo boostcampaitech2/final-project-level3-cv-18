@@ -70,8 +70,8 @@ def main(args):
         count=total_string, # 생성할 이미지 개수
         size=92,            # 이미지 가로 길이
         # distorsion_type = 3,  # 왜곡 정도
-        blur=1,             # 흐림 정도
-        random_blur=True,   # 흐림 랜덤
+        blur=args.blur_power,             # 흐림 정도
+        random_blur=args.blur,   # 흐림 랜덤
         text_color='#000000,#888888', # 색상 랜덤
 
         skewing_angle=args.angle,
@@ -91,7 +91,7 @@ def main(args):
     )
 
     for img, label in generator:
-        print(label)                  # 문자열 출력
+        # print(label)                  # 문자열 출력
         img.save(f'syns/{label}.jpg') # 이미지 저장
 
 
@@ -99,9 +99,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--n", "--num_of_generated_strings", type=int, default=10, help="the number of generated strings.")
     parser.add_argument("--dash", action='store_true', help="if True, dash character must be inserted.")
+    parser.add_argument("--blur", action='store_false', help="if False, character always be blured.")
+    parser.add_argument("--blur_power", type=int, default=2, help="Set blur power (recommanded max is 7)")
     parser.add_argument("--space", action='store_true', help="if True, space character must be inserted.")
     parser.add_argument("--nospace", action='store_true', help="if True, space character must be NOT inserted.")
     parser.add_argument("--angle", type=int, default=0, help="set angle of text")
 
     args = parser.parse_args()
     main(args)
+    
+    
