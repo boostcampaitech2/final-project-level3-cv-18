@@ -32,7 +32,7 @@ def main():
 
     st.header("Uploaded Image")
     uploaded_file = st.sidebar.file_uploader("Choose an image", type=["jpg", "jpeg","png"])
-    realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
+    # realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
     box_color = st.sidebar.color_picker(label="Box Color", value='#F00000')
     aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=["1:1", "16:9", "4:3", "2:3", "Free"])
     aspect_dict = {"1:1": (1,1),
@@ -46,13 +46,13 @@ def main():
         image_bytes = uploaded_file.getvalue()
         image = Image.open(io.BytesIO(image_bytes))
         
-        if not realtime_update:
-            st.write("Double click to save crop")
-        cropped_img = st_cropper(image, realtime_update=realtime_update, box_color=box_color, aspect_ratio=aspect_ratio)
+        # if not realtime_update:
+        #     st.write("Double click to save crop")
+        cropped_img = st_cropper(image, box_color=box_color, aspect_ratio=aspect_ratio)
 
         # Manipulate cropped image at will
         st.write("Preview")
-        cropped_img.thumbnail((150,150))
+        # cropped_img.thumbnail((150,150))
         st.image(cropped_img)
 
         # 모델에 이미지 입력 (여기서부터 안 됨)
