@@ -9,6 +9,7 @@ $ python myrun.py \
 * Options
     * n: 생성할 이미지 개수
     * space: 이미지에 " "(공백문자) 를 하나 이상 포함
+    * nospace: 이미지에 " "(공백문자) 를 포함하지 않음.
     * dash: 이미지에 "-" 를 하나 이상 포함
     * angle: 이미지 기울기를 (-angle ~ +angle) 만큼 돌림.
 
