@@ -5,7 +5,7 @@ import io
 import os
 import yaml
 import time
-
+import requests
 from PIL import Image
 
 from predict import load_model, get_prediction
@@ -56,14 +56,18 @@ def main():
         st.image(cropped_img)
 
         # 모델에 이미지 입력 (여기서부터 안 됨)
-        cropped_img = cropped_img.save(io.BytesIO(), 'PNG')
+        cropped_img_byte = io.BytesIO()
+        cropped_img.save(cropped_img_byte, format='PNG')
+        cropped_img_byte = cropped_img_byte.getvalue()
 
-        # 추론 시작
-        # st.write("Classifying...")
-        # _, y_hat = get_prediction(model, cropped_img)
-        # label = config['classes'][y_hat.item()]
+        st.write("Classifying...")
+        files = [('files', (uploaded_file.name, cropped_img_byte, uploaded_file.type))]
+
+        response = requests.post("http://localhost:8501/prediction/", files=files)
+        st.write(response.status_code)
+        label, confidence_score = response.json().values()
 
         # 추론 결과 반영
-        # st.write(f'label is {label}')
+        st.write(f'label is {label}, {confidence_score}')
         
 main()
