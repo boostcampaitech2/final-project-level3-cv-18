@@ -26,7 +26,7 @@ async def get_prediction(files: List[UploadFile] = File(...)):
         os.mkdir("./tmp")
     image.save(f"./tmp/{image_name}.jpg", "PNG")
 
-    os.system("CUDA_VISIBLE_DEVICES=0 python3 ../deep-text-recognition-benchmark/demo.py \
+    os.system("CUDA_VISIBLE_DEVICES=0 python3 ./deep-text-recognition-benchmark/demo.py \
 --Transformation TPS --FeatureExtraction ResNet --SequenceModeling BiLSTM --Prediction Attn \
 --image_folder ./tmp/ \
 --saved_model ./model.pth > ./tmp/tmp.txt")
