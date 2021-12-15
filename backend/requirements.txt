@@ -1,0 +1,6 @@
+torch
+streamlit
+pyyaml
+pillow
+fastapi
+uvicorn
