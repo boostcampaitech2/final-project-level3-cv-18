@@ -1,0 +1,72 @@
+[1/300000] Train loss: 3.67318, Valid loss: 3.59226, Elapsed_time: 0.43317
+Current_accuracy : 0.000, Current_norm_ED  : 0.00
+Best_accuracy    : 0.000, Best_norm_ED     : 0.00
+--------------------------------------------------------------------------------
+Ground Truth              | Prediction                | Confidence Score & T/F
+--------------------------------------------------------------------------------
+m9697c                    | z222222qqqqqqqqqqqzzzzzzz | 0.0000	False
+s80783                    |                           | 0.0000	False
+gv7098                    |                           | 0.0000	False
+b37846                    | x                         | 0.0342	False
+m9160c                    | xxxxxxxxxxxxxxxxxxxxxxxxx | 0.0000	False
+--------------------------------------------------------------------------------
+[1/300000] Train loss: 3.67318, Valid loss: 3.59306, Elapsed_time: 0.42079
+Current_accuracy : 0.000, Current_norm_ED  : 0.00
+Best_accuracy    : 0.000, Best_norm_ED     : 0.00
+--------------------------------------------------------------------------------
+Ground Truth              | Prediction                | Confidence Score & T/F
+--------------------------------------------------------------------------------
+m9697c                    | z2222222222qqqqqqzzzzzzzz | 0.0000	False
+s80783                    |                           | 0.0000	False
+gv7098                    | 22222222xxqqqqq           | 0.0000	False
+b37846                    | x                         | 0.0342	False
+m9160c                    | xxxxxxxxxxxxxxxxxxxxxxxxx | 0.0000	False
+--------------------------------------------------------------------------------
+[1/100] Train loss: 3.66977, Valid loss: 3.64504, Elapsed_time: 0.37325
+Current_accuracy : 0.000, Current_norm_ED  : 0.00
+Best_accuracy    : 0.000, Best_norm_ED     : 0.00
+--------------------------------------------------------------------------------
+Ground Truth              | Prediction                | Confidence Score & T/F
+--------------------------------------------------------------------------------
+lhe0401                   | kqqqqqqqqqqqqqqqqqqqqqqqq | 0.0000	False
+rbkh05299                 | kkqqqqqqqqqqqqqqqqqqqqqqq | 0.0000	False
+g9sb551                   | kkqqqqqqqqqqqqqqqqqqqqqqq | 0.0000	False
+1sm01611d                 | qqqqqqqqqqqqqqqqqqqqqqqqq | 0.0000	False
+m9160c                    | kqqqqqqqqqqqqqqqqqqqqqqqq | 0.0000	False
+--------------------------------------------------------------------------------
+[1/100] Train loss: 1.42688, Valid loss: 0.33498, Elapsed_time: 0.36378
+Current_accuracy : 68.000, Current_norm_ED  : 0.91
+Best_accuracy    : 68.000, Best_norm_ED     : 0.91
+--------------------------------------------------------------------------------
+Ground Truth              | Prediction                | Confidence Score & T/F
+--------------------------------------------------------------------------------
+lhe0401                   | lhe0401                   | 0.1330	True
+rbkh05299                 | rbkh05299                 | 0.6051	True
+g9sb551                   | g93b551                   | 0.1752	False
+1sm01611d                 | 18m016110                 | 0.5329	False
+m9160c                    | m9160c                    | 0.9640	True
+--------------------------------------------------------------------------------
+[1/300000] Train loss: 1.42688, Valid loss: 0.33498, Elapsed_time: 0.36919
+Current_accuracy : 68.000, Current_norm_ED  : 0.91
+Best_accuracy    : 68.000, Best_norm_ED     : 0.91
+--------------------------------------------------------------------------------
+Ground Truth              | Prediction                | Confidence Score & T/F
+--------------------------------------------------------------------------------
+lhe0401                   | lhe0401                   | 0.1330	True
+rbkh05299                 | rbkh05299                 | 0.6051	True
+g9sb551                   | g93b551                   | 0.1752	False
+1sm01611d                 | 18m016110                 | 0.5329	False
+m9160c                    | m9160c                    | 0.9640	True
+--------------------------------------------------------------------------------
+[2000/300000] Train loss: 0.00365, Valid loss: 0.00002, Elapsed_time: 363.61855
+Current_accuracy : 100.000, Current_norm_ED  : 1.00
+Best_accuracy    : 100.000, Best_norm_ED     : 1.00
+--------------------------------------------------------------------------------
+Ground Truth              | Prediction                | Confidence Score & T/F
+--------------------------------------------------------------------------------
+s80783                    | s80783                    | 0.9999	True
+m9160c                    | m9160c                    | 1.0000	True
+b37846                    | b37846                    | 0.9998	True
+s80783                    | s80783                    | 0.9999	True
+fz0388                    | fz0388                    | 0.9999	True
+--------------------------------------------------------------------------------

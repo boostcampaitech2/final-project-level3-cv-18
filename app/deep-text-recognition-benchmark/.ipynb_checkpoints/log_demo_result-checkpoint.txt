@@ -1,0 +1,135 @@
+--------------------------------------------------------------------------------
+image_path               	predicted_labels         	confidence score
+--------------------------------------------------------------------------------
+demo_image/demo_1.png    	available                	0.9999
+demo_image/demo_2.jpg    	shakeshack               	0.9533
+demo_image/demo_3.png    	london                   	0.9840
+demo_image/demo_4.png    	greenstead               	0.9985
+demo_image/demo_5.png    	toast                    	0.9961
+demo_image/demo_6.png    	merry                    	0.9975
+demo_image/demo_7.png    	underground              	1.0000
+demo_image/demo_8.jpg    	ronaldo                  	0.8387
+demo_image/demo_9.jpg    	bally                    	0.7566
+demo_image/demo_10.jpg   	university               	0.9998
+--------------------------------------------------------------------------------
+image_path               	predicted_labels         	confidence score
+--------------------------------------------------------------------------------
+demo_image/demo_1.png    	available                	0.9999
+demo_image/demo_2.jpg    	shakeshack               	0.9533
+demo_image/demo_3.png    	london                   	0.9840
+demo_image/demo_4.png    	greenstead               	0.9985
+demo_image/demo_5.png    	toast                    	0.9961
+demo_image/demo_6.png    	merry                    	0.9975
+demo_image/demo_7.png    	underground              	1.0000
+demo_image/demo_8.jpg    	ronaldo                  	0.8387
+demo_image/demo_9.jpg    	bally                    	0.7566
+demo_image/demo_10.jpg   	university               	0.9998
+--------------------------------------------------------------------------------
+image_path               	predicted_labels         	confidence score
+--------------------------------------------------------------------------------
+demo_image/demo_1.png    	available                	0.9999
+demo_image/demo_2.jpg    	shakeshack               	0.9533
+demo_image/demo_3.png    	london                   	0.9840
+demo_image/demo_4.png    	greenstead               	0.9985
+demo_image/demo_5.png    	toast                    	0.9961
+demo_image/demo_6.png    	merry                    	0.9975
+demo_image/demo_7.png    	underground              	1.0000
+demo_image/demo_8.jpg    	ronaldo                  	0.8387
+demo_image/demo_9.jpg    	bally                    	0.7566
+demo_image/demo_10.jpg   	university               	0.9998
+--------------------------------------------------------------------------------
+image_path               	predicted_labels         	confidence score
+--------------------------------------------------------------------------------
+demo_image/demo_1.png    	available                	0.9999
+demo_image/demo_2.jpg    	shakeshack               	0.9533
+demo_image/demo_3.png    	london                   	0.9840
+demo_image/demo_4.png    	greenstead               	0.9985
+demo_image/demo_5.png    	toast                    	0.9961
+demo_image/demo_6.png    	merry                    	0.9975
+demo_image/demo_7.png    	underground              	1.0000
+demo_image/demo_8.jpg    	ronaldo                  	0.8387
+demo_image/demo_9.jpg    	bally                    	0.7566
+demo_image/demo_10.jpg   	university               	0.9998
+demo_image/demo_12.jpg   	m91600                   	0.4215
+--------------------------------------------------------------------------------
+image_path               	predicted_labels         	confidence score
+--------------------------------------------------------------------------------
+demo_image/demo_1.png    	available                	0.9999
+demo_image/demo_2.jpg    	shakeshack               	0.9533
+demo_image/demo_3.png    	london                   	0.9840
+demo_image/demo_4.png    	greenstead               	0.9985
+demo_image/demo_5.png    	toast                    	0.9961
+demo_image/demo_6.png    	merry                    	0.9975
+demo_image/demo_7.png    	underground              	1.0000
+demo_image/demo_8.jpg    	ronaldo                  	0.8387
+demo_image/demo_9.jpg    	bally                    	0.7566
+demo_image/demo_10.jpg   	university               	0.9998
+demo_image/demo_11.jpg   	mimm1600                 	0.0060
+demo_image/demo_12.jpg   	m91600                   	0.4215
+demo_image/demo_13.jpg   	s80783                   	0.7706
+--------------------------------------------------------------------------------
+image_path               	predicted_labels         	confidence score
+--------------------------------------------------------------------------------
+demo_image/KakaoTalk_20211206_140911955_04.jpg	m91600                   	0.5000
+demo_image/KakaoTalk_20211206_140911955_05.jpg	b37846                   	0.9185
+demo_image/KakaoTalk_20211206_140911955_06.jpg	7387667                  	0.0187
+demo_image/KakaoTalk_20211206_140911955_07.jpg	lheohot                  	0.1432
+demo_image/KakaoTalk_20211206_140911955_08.jpg	ismo1bid                 	0.1372
+demo_image/KakaoTalk_20211206_140911955_08_1.jpg	ismo1611d                	0.1363
+demo_image/KakaoTalk_20211206_140911955_11.jpg	trampleoc                	0.0009
+demo_image/KakaoTalk_20211206_140911955_12.jpg	m9160c                   	0.7199
+demo_image/KakaoTalk_20211206_140911955_13.jpg	masses                   	0.0057
+demo_image/KakaoTalk_20211206_140911955_14.jpg	1650                     	0.0040
+demo_image/KakaoTalk_20211206_140911955_15.jpg	m91600                   	0.3165
+demo_image/KakaoTalk_20211206_140911955_16.jpg	fu8297                   	0.6876
+demo_image/KakaoTalk_20211206_140911955_17.jpg	fz0387                   	0.6503
+demo_image/KakaoTalk_20211206_140911955_18.jpg	fz0388                   	0.4974
+demo_image/KakaoTalk_20211206_140911955_19.jpg	vnfoeeswht               	0.0729
+demo_image/KakaoTalk_20211206_140911955_20.jpg	vinfoeesbards            	0.0009
+demo_image/KakaoTalk_20211206_140911955_21.jpg	gv7098                   	0.9254
+demo_image/KakaoTalk_20211206_140911955_22.jpg	rbkho5299                	0.7115
+demo_image/KakaoTalk_20211206_140911955_23.jpg	fitmo1388dd              	0.0007
+demo_image/KakaoTalk_20211206_140911955_24.jpg	37228002                 	0.9354
+demo_image/KakaoTalk_20211206_140911955_25.jpg	1tmo0652                 	0.1917
+demo_image/KakaoTalk_20211206_140911955_26.jpg	m9166c                   	0.8516
+demo_image/KakaoTalk_20211206_140911955_29.jpg	fus2ig21                 	0.2324
+demo_image/KakaoTalk_20211206_140919988.jpg	boust                    	0.0124
+demo_image/KakaoTalk_20211206_140919988_01.jpg	gisb551                  	0.9568
+demo_image/KakaoTalk_20211206_140919988_02.jpg	articpials               	0.1285
+demo_image/demo_1.png    	available                	0.9999
+demo_image/demo_2.jpg    	shakeshack               	0.9533
+demo_image/demo_3.png    	london                   	0.9840
+demo_image/demo_4.png    	greenstead               	0.9985
+demo_image/demo_5.png    	toast                    	0.9961
+demo_image/demo_6.png    	merry                    	0.9975
+demo_image/demo_7.png    	underground              	1.0000
+demo_image/demo_8.jpg    	ronaldo                  	0.8387
+demo_image/demo_9.jpg    	bally                    	0.7567
+demo_image/demo_10.jpg   	university               	0.9998
+demo_image/demo_11.jpg   	mimm1600                 	0.0060
+demo_image/demo_12.jpg   	m91600                   	0.4215
+demo_image/demo_13.jpg   	s80783                   	0.7706
+--------------------------------------------------------------------------------
+image_path               	predicted_labels         	confidence score
+--------------------------------------------------------------------------------
+demo_image/KakaoTalk_20211206_140911955.jpg	and                      	0.0346
+demo_image/KakaoTalk_20211206_140911955_01.jpg	pression                 	0.0007
+demo_image/KakaoTalk_20211206_140911955_02.jpg	states                   	0.0003
+demo_image/KakaoTalk_20211206_140911955_03.jpg	beling                   	0.0001
+demo_image/KakaoTalk_20211206_140911955_04.jpg	real                     	0.0018
+demo_image/KakaoTalk_20211206_140911955_05.jpg	consuptenting            	0.0000
+demo_image/KakaoTalk_20211206_140911955_06.jpg	propent                  	0.0000
+demo_image/KakaoTalk_20211206_140911955_07.jpg	the                      	0.1028
+demo_image/demo_1.png    	available                	0.9999
+demo_image/demo_2.jpg    	shakeshack               	0.9533
+demo_image/demo_3.png    	london                   	0.9840
+demo_image/demo_4.png    	greenstead               	0.9985
+demo_image/demo_5.png    	toast                    	0.9961
+demo_image/demo_6.png    	merry                    	0.9975
+demo_image/demo_7.png    	underground              	1.0000
+demo_image/demo_8.jpg    	ronaldo                  	0.8387
+demo_image/demo_9.jpg    	bally                    	0.7566
+demo_image/demo_10.jpg   	university               	0.9998
+demo_image/demo_11.jpg   	mimm1600                 	0.0060
+demo_image/demo_12.jpg   	m91600                   	0.4215
+demo_image/demo_13.jpg   	s80783                   	0.7706
