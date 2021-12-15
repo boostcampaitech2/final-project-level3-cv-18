@@ -1,5 +1,0 @@
-numpy
-pyyaml
-streamlit
-streamlit_cropper
-requests
