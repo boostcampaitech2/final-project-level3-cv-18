@@ -12,6 +12,13 @@ from fastapi import FastAPI, File, UploadFile
 
 
 app = FastAPI()
+INFERENCE_QUERY = \
+"""
+CUDA_VISIBLE_DEVICES=0 python3 ./inference/demo.py \
+--Transformation None --FeatureExtraction VGG --SequenceModeling None --Prediction CTC \
+--image_folder ./tmp/ \
+--saved_model ./inference/model_NoneVggNoneCTC.pth > ./tmp/tmp.txt
+""".strip()
 
 
 @app.post("/prediction/")
@@ -25,10 +32,7 @@ async def get_prediction(files: List[UploadFile] = File(...)):
         os.mkdir("./tmp")
     image.save(f"./tmp/{image_name}.jpg", "PNG")
 
-    os.system("CUDA_VISIBLE_DEVICES=0 python3 ./deep-text-recognition-benchmark/demo.py \
---Transformation TPS --FeatureExtraction ResNet --SequenceModeling BiLSTM --Prediction Attn \
---image_folder ./tmp/ \
---saved_model ./model.pth > ./tmp/tmp.txt")
+    os.system(INFERENCE_QUERY)
 
     with open("./tmp/tmp.txt") as f:
         output = f.read()
