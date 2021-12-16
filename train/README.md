@@ -1,3 +1,27 @@
+# For our works
+1. Transform our data into LMDB data.
+```bash
+$ python3 create_lmdb_dataset.py \
+--inputPath ${IMAGE_ROOT}/ --gtFile ${IMAGE_ROOT}/gt.txt \
+--outputPath result
+```
+> Transfromed files is created in the directory named "result".
+
+2. Train (Fine-tune with pretrained model. - [download link](https://www.dropbox.com/sh/j3xmli4di1zuv3s/AAArdcPgz7UFxIHUuKNOeKv_a?dl=0))
+```bash
+$ CUDA_VISIBLE_DEVICES=0 python3 train.py \
+--train_data result.traindata/ --valid_data result.validdata/ \
+--Transformation None --FeatureExtraction VGG --SequenceModeling None --Prediction CTC \
+--batch_size 32 --num_iter 5000 --valInterval 1000 --input_channel 1 \
+--saved_model ./None-VGG-None-CTC.pth 
+```
+> Must match Transformation, FeatureExtraction, SequenceModeling, Prediction with saved_model.
+
+3. Move trained model
+```bash
+$ mv trained_model.pth ${BACKEND_DIR}
+```
+
 # What Is Wrong With Scene Text Recognition Model Comparisons? Dataset and Model Analysis
 | [paper](https://arxiv.org/abs/1904.01906) | [training and evaluation data](https://github.com/clovaai/deep-text-recognition-benchmark#download-lmdb-dataset-for-traininig-and-evaluation-from-here) | [failure cases and cleansed label](https://github.com/clovaai/deep-text-recognition-benchmark#download-failure-cases-and-cleansed-label-from-here) | [pretrained model](https://www.dropbox.com/sh/j3xmli4di1zuv3s/AAArdcPgz7UFxIHUuKNOeKv_a?dl=0) | [Baidu ver(passwd:rryk)](https://pan.baidu.com/s/1KSNLv4EY3zFWHpBYlpFCBQ) |
 
