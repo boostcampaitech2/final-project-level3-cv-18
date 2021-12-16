@@ -11,12 +11,17 @@ conda activate OCR
 pip install -r requirements.txt
 ```
 
-## Streamlit 실행
-```python
-streamlit run app.py
+## Streamlit, FastAPI 실행
+리눅스
+```
+make -j 2 run_app
 ```
 
-## Aistages에서 Streamlit 실행
-```python
-nohup run .py —server.port=6006 —server.runOnSave=true
+윈도우 
+```
+# FastAPI 백그라운드 실행
+start /b python -m app
+
+# Streamlit 포그라운드 실행
+streamlit run app/frontend.py
 ```
