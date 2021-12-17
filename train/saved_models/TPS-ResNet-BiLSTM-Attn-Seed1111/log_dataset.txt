@@ -138,3 +138,18 @@ Total_batch_size: 16 = 16
 dataset_root:    result	 dataset: /
 sub-directory:	/.	 num samples: 25
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: result.train/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    result.train/	 dataset: /
+sub-directory:	/.	 num samples: 1862
+num total samples of /: 1862 x 1.0 (total_data_usage_ratio) = 1862
+num samples of / per batch: 32 x 1.0 (batch_ratio) = 32
+--------------------------------------------------------------------------------
+Total_batch_size: 32 = 32
+--------------------------------------------------------------------------------
+dataset_root:    result.valid/	 dataset: /
+sub-directory:	/.	 num samples: 80
+--------------------------------------------------------------------------------
