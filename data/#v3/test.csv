@@ -1,0 +1,51 @@
+file_name,file_size,product_no,status,letter,environment,image_w,image_h,product_no_len,image_type,data_type,file_path
+2.jpg,21794.0,AV3133 001,Horizontal,Clear,Clear,152,34,10,collect,test,test/2.jpg
+11.PNG,17979.0,3GM01093,Diagonal,Clear,Clear,157,67,8,collect,test,test/11.PNG
+12.PNG,22649.0,1XM00998D,Diagonal,Clear,Clear,191,67,9,collect,test,test/12.PNG
+13.PNG,22399.0,FX4322,Diagonal,Clear,Clear,160,82,6,collect,test,test/13.PNG
+15.PNG,30700.0,DV6620,Diagonal,Clear,Clear,205,72,6,collect,test,test/15.PNG
+20.PNG,14625.0,1RM01153,Horizontal,Clear,Clear,157,46,8,collect,test,test/20.PNG
+26.PNG,6316.0,S00A5C0,Diagonal,Clear,Clear,103,27,7,collect,test,test/26.PNG
+27.PNG,14517.0,S00A6M0,Diagonal,Clear,Clear,97,58,7,collect,test,test/27.PNG
+28.PNG,18208.0,FS1SIZ3140X,Horizontal,Clear,Clear,201,56,11,collect,test,test/28.PNG
+29.PNG,22202.0,FX3922,Horizontal,Clear,Clear,162,79,6,collect,test,test/29.PNG
+30.PNG,21520.0,DV6619,Diagonal,Clear,Clear,188,66,6,collect,test,test/30.PNG
+35.PNG,12241.0,SP0WW20X821,Horizontal,Clear,Clear,139,34,11,collect,test,test/35.PNG
+25.PNG,10555.0,DB2718,Diagonal,Clear,Clear,123,42,6,collect,test,test/25.PNG
+KakaoTalk_20211206_140911955_02.jpg,6515.0,M9160C,Horizontal,Blur,Clear,353,116,6,collect,test,test/KakaoTalk_20211206_140911955_02.jpg
+KakaoTalk_20211206_140911955_06.jpg,3064.0,73-B7637,Horizontal,Clear,Clear,193,48,8,collect,test,test/KakaoTalk_20211206_140911955_06.jpg
+KakaoTalk_20211206_140911955_13.jpg,5461.0,M9697C,Horizontal,Clear,Clear,128,80,6,collect,test,test/KakaoTalk_20211206_140911955_13.jpg
+KakaoTalk_20211206_140911955_14.jpg,11927.0,169880C,Horizontal,Clear,Clear,226,128,7,collect,test,test/KakaoTalk_20211206_140911955_14.jpg
+KakaoTalk_20211206_140911955_15.jpg,4556.0,M9160C,Horizontal,Clear,Clear,244,52,6,collect,test,test/KakaoTalk_20211206_140911955_15.jpg
+KakaoTalk_20211206_140911955_16.jpg,11014.0,FU8297,Horizontal,Clear,Clear,282,161,6,collect,test,test/KakaoTalk_20211206_140911955_16.jpg
+KakaoTalk_20211206_140911955_20.jpg,4046.0,VN-0EE3BKA,Horizontal,Clear,Clear,239,56,10,collect,test,test/KakaoTalk_20211206_140911955_20.jpg
+KakaoTalk_20211206_140911955_23.jpg,3654.0,1TM01393D,Horizontal,Clear,Clear,207,48,9,collect,test,test/KakaoTalk_20211206_140911955_23.jpg
+KakaoTalk_20211206_140911955_29.jpg,4187.0,FUS21G2,Horizontal,Clear,Clear,174,69,7,collect,test,test/KakaoTalk_20211206_140911955_29.jpg
+KakaoTalk_20211206_140919988.jpg,8928.0,BD1551,Horizontal,Clear,Clear,85,48,6,collect,test,test/KakaoTalk_20211206_140919988.jpg
+2021-12-06 155505.jpg,21445.0,839611-400,Horizontal,Tilted,Clear,142,24,10,collect,test,test/2021-12-06 155505.jpg
+2021-12-06 155724.jpg,20837.0,642330-002,Diagonal,Clear,Clear,113,21,10,collect,test,test/2021-12-06 155724.jpg
+20211205_195216.jpg,40070.0,CW4555-102,Horizontal,Clear,Clear,506,74,10,collect,test,test/20211205_195216.jpg
+20211205_195303.jpg,37447.0,CU4826-002,Horizontal,Clear,Clear,421,62,10,collect,test,test/20211205_195303.jpg
+20211205_195820.jpg,34061.0,DB2880-001,Horizontal,Blur,Shadow,498,62,10,collect,test,test/20211205_195820.jpg
+20211205_195922.jpg,38461.0,BQ3207-014,Horizontal,Tilted,Reflection,493,88,10,collect,test,test/20211205_195922.jpg
+7-39CFA0047042.jpeg,37383.0,7-39CFA0047042,Diagonal,Blur,Shadow,722,175,14,collect,test,test/7-39CFA0047042.jpeg
+144757C.jpg,2646.0,144757C,Diagonal,Clear,Clear,95,29,7,collect,test,test/144757C.jpg
+160458C.jpg,3333.0,160458C,Horizontal,Clear,Clear,119,31,7,collect,test,test/160458C.jpg
+FS1SIA1011X.jpg,3738.0,FS1SIA1011X,Diagonal,Clear,Clear,134,46,11,collect,test,test/FS1SIA1011X.jpg
+FS1SIZ3220X.jpeg,13642.0,FS1SIZ3220X,Horizontal,Tilted,Clear,314,78,11,collect,test,test/FS1SIZ3220X.jpeg
+FW2752.jpg,3194.0,FW2752,Diagonal,Clear,Clear,105,39,6,collect,test,test/FW2752.jpg
+M9696C.jpeg,31521.0,M9696C,Diagonal,Blur,Clear,488,145,6,collect,test,test/M9696C.jpeg
+S12-51017.jpg,21664.0,S12-51017,Diagonal,Blur,Clear,472,131,9,collect,test,test/S12-51017.jpg
+KakaoTalk_20211206_145622269_00.jpg,38418.0,SPW302621G,Left_Rot,Tilted,Clear,406,96,10,collect,test,test/KakaoTalk_20211206_145622269_00.jpg
+KakaoTalk_20211206_145622269_05.jpg,68190.0,S001XG0,Right_Rot,Clear,Clear,436,336,7,collect,test,test/KakaoTalk_20211206_145622269_05.jpg
+KakaoTalk_20211206_145622269_07.jpg,30902.0,Q23449,Right_Rot,Blur,Shadow,342,101,6,collect,test,test/KakaoTalk_20211206_145622269_07.jpg
+KakaoTalk_20211206_145622269_08.jpg,40822.0,908999-016,Right_Rot,Tilted,Clear,449,95,10,collect,test,test/KakaoTalk_20211206_145622269_08.jpg
+KakaoTalk_20211206_145622269_01.jpg,64658.0,EVM 004001,Left_Rot,Blur,Shadow,887,251,10,collect,test,test/KakaoTalk_20211206_145622269_01.jpg
+KakaoTalk_20211206_145622269_16.jpg,38753.0,B25176,Left_Rot,Clear,Clear,311,123,6,collect,test,test/KakaoTalk_20211206_145622269_16.jpg
+j3.jpg,8946.0,CU4149-001,Diagonal,Blur,Shadow,373,91,10,collect,test,test/j3.jpg
+j8.jpg,8800.0,374902-08,Diagonal,Blur,Clear,287,73,9,collect,test,test/j8.jpg
+j9.jpg,23575.0,DX-SH211-1N-K0002,Diagonal,Tilted,Clear,511,173,17,collect,test,test/j9.jpg
+j12.jpg,34211.0,SN 99999938 COLOR:BKW,Horizontal,Blur,Reflection,773,113,21,collect,test,test/j12.jpg
+j15.jpg,11930.0,385516-01,Diagonal,Blur,Shadow,311,135,9,collect,test,test/j15.jpg
+j25.jpg,15860.0,1RM01263D-125,Horizontal,Tilted,Clear,497,89,13,collect,test,test/j25.jpg
+j29.jpg,19329.0,DH1349-401,Horizontal,Blur,Clear,661,117,10,collect,test,test/j29.jpg
