@@ -2,7 +2,12 @@
 .ipynb_checkpoints
 *.log
 log_demo_result.txt
+
 *.png
 *.jpg
 *.jpeg
+*.PNG
+*.JPG
+*.JPEG
+
 *.pth
