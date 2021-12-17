@@ -12,6 +12,7 @@ import numpy as np
 from PIL import Image
 
 from confirm_button_hack import cache_on_button_press
+from utils import send_to_bucket,bring_from_bucket,get_naver_api
 
 # SETTING PAGE CONFIG TO WIDE MODE - 탭 제목
 # st.set_page_config(layout="wide")
@@ -23,8 +24,8 @@ def main():
 
     st.title(":athletic_shoe: Shoes product number OCR!!")
 
-    with open("config.yaml") as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
+    # with open("config.yaml") as f:
+    #     config = yaml.load(f, Loader=yaml.FullLoader)
 
     st.header("Uploaded Image")
     uploaded_file = st.sidebar.file_uploader("Choose an image", type=["jpg", "jpeg","png"])
@@ -64,7 +65,22 @@ def main():
 
         # 추론 결과 반영
         st.write(f'label is {label}, {confidence_score}')
-
+        
+        # gcp bucket 전송
+        send_to_bucket(image_name=label,image_bytes=cropped_img_byte)
+        
+        # naver api 정보 가져오기
+        get_item_info = get_naver_api(label = label)
+        if get_item_info == "Not Exist":
+            st.write("Can't find product")
+        else : 
+            st.write("상품명",get_item_info['title'])
+            st.write("최저가",get_item_info['lprice'])
+            st.write("상품 보러가기",get_item_info['link'])
+            st.image(get_item_info['image'])
+            with st.expander("자세한 상품 정보"):
+                st.write(get_item_info['brand'])
+                st.write(get_item_info['category1'],get_item_info['category2'],get_item_info['category3'],get_item_info['category4'])
 
 if __name__ == "__main__":
     main()
