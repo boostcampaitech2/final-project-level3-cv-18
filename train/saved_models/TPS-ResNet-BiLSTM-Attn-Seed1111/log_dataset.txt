@@ -153,3 +153,143 @@ Total_batch_size: 32 = 32
 dataset_root:    result.valid/	 dataset: /
 sub-directory:	/.	 num samples: 80
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: result.train/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/train_nospace/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/train_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 1862
+num total samples of /: 1862 x 1.0 (total_data_usage_ratio) = 1862
+num samples of / per batch: 32 x 1.0 (batch_ratio) = 32
+--------------------------------------------------------------------------------
+Total_batch_size: 32 = 32
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/valid_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 80
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/train_nospace/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/train_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 1862
+num total samples of /: 1862 x 1.0 (total_data_usage_ratio) = 1862
+num samples of / per batch: 32 x 1.0 (batch_ratio) = 32
+--------------------------------------------------------------------------------
+Total_batch_size: 32 = 32
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/valid_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 80
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/train_nospace/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/train_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 1862
+num total samples of /: 1862 x 1.0 (total_data_usage_ratio) = 1862
+num samples of / per batch: 32 x 1.0 (batch_ratio) = 32
+--------------------------------------------------------------------------------
+Total_batch_size: 32 = 32
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/valid_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 80
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/train_nospace/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/train_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 1862
+num total samples of /: 1862 x 1.0 (total_data_usage_ratio) = 1862
+num samples of / per batch: 32 x 1.0 (batch_ratio) = 32
+--------------------------------------------------------------------------------
+Total_batch_size: 32 = 32
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/valid_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 80
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/train_nospace/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/train_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 1862
+num total samples of /: 1862 x 1.0 (total_data_usage_ratio) = 1862
+num samples of / per batch: 32 x 1.0 (batch_ratio) = 32
+--------------------------------------------------------------------------------
+Total_batch_size: 32 = 32
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/valid_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 80
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/my_nodash/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/my_nodash/	 dataset: /
+sub-directory:	/.	 num samples: 1000
+num total samples of /: 1000 x 1.0 (total_data_usage_ratio) = 1000
+num samples of / per batch: 64 x 1.0 (batch_ratio) = 64
+--------------------------------------------------------------------------------
+Total_batch_size: 64 = 64
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/teamdata_nospace_nodash/	 dataset: /
+sub-directory:	/.	 num samples: 156
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/my/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/my/	 dataset: /
+sub-directory:	/.	 num samples: 1000
+num total samples of /: 1000 x 1.0 (total_data_usage_ratio) = 1000
+num samples of / per batch: 64 x 1.0 (batch_ratio) = 64
+--------------------------------------------------------------------------------
+Total_batch_size: 64 = 64
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/teamdata_nospace_nodash/	 dataset: /
+sub-directory:	/.	 num samples: 156
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/my/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/my/	 dataset: /
+sub-directory:	/.	 num samples: 1000
+num total samples of /: 1000 x 1.0 (total_data_usage_ratio) = 1000
+num samples of / per batch: 64 x 1.0 (batch_ratio) = 64
+--------------------------------------------------------------------------------
+Total_batch_size: 64 = 64
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/teamdata_nospace	 dataset: /
+sub-directory:	/.	 num samples: 156
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/my/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/my/	 dataset: /
+sub-directory:	/.	 num samples: 1000
+num total samples of /: 1000 x 1.0 (total_data_usage_ratio) = 1000
+num samples of / per batch: 64 x 1.0 (batch_ratio) = 64
+--------------------------------------------------------------------------------
+Total_batch_size: 64 = 64
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/teamdata_nospace	 dataset: /
+sub-directory:	/.	 num samples: 156
+--------------------------------------------------------------------------------

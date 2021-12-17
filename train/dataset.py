@@ -90,6 +90,7 @@ class Batch_Balanced_Dataset(object):
             except StopIteration:
                 self.dataloader_iter_list[i] = iter(self.data_loader_list[i])
                 image, text = self.dataloader_iter_list[i].next()
+                
                 balanced_batch_images.append(image)
                 balanced_batch_texts += text
             except ValueError:
