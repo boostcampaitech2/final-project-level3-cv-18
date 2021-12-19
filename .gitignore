@@ -12,4 +12,4 @@ log_demo_result.txt
 *.JPEG
 
 *.pth
-&.pyc
+*.pyc
