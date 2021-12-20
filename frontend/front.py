@@ -13,8 +13,9 @@ import numpy as np
 from PIL import Image
 
 from confirm_button_hack import cache_on_button_press
-from utils import send_to_bucket,bring_from_bucket,get_naver_api
-
+from utils import send_to_bucket,get_naver_api
+from uuid import uuid1
+from datetime import datetime 
 # SETTING PAGE CONFIG TO WIDE MODE - 탭 제목
 # st.set_page_config(layout="wide")
 st.set_page_config(page_title="Shoes product number OCR", page_icon=":athletic_shoe:", layout="centered")
@@ -61,9 +62,8 @@ def main():
     if uploaded_file:
         image_bytes = uploaded_file.getvalue()
         image = Image.open(io.BytesIO(image_bytes))
-
-        # if not realtime_update:
-        #     st.write("Double click to save crop")
+        if not realtime_update:
+            st.write("Double click to save crop")
         cropped_img = st_cropper(image, box_color=box_color, aspect_ratio=aspect_ratio,realtime_update=realtime_update).convert("L")
 
         # Manipulate cropped image at will
@@ -93,7 +93,7 @@ def main():
                 st.write("Can't find product")
             else : 
                 product_info_print(get_item_info)
-                send_to_bucket(image_name=label,image_bytes=cropped_img_byte)
+                send_to_bucket(image_id=uuid1(),label = label,image_bytes=cropped_img_byte,date=datetime.now())
 
 
 

@@ -1,5 +1,7 @@
 from array import array
+from datetime import datetime
 import io
+import uuid
 import numpy as np
 from PIL import Image
 
@@ -23,11 +25,12 @@ credentials = ServiceAccountCredentials.from_json_keyfile_dict(
     credentials_dict
 )
     
-def send_to_bucket(image_name:str, image_bytes:bytes):
+def send_to_bucket(image_id:uuid, image_bytes:bytes,label:str,date:datetime):
     client = storage.Client(credentials=credentials, project=st.secrets['gcp']['project_id'])
     bucket = client.get_bucket(st.secrets['gcp']['bucket'])
-    bucket.blob(image_name).upload_from_string(image_bytes)
-    image_url = bucket.blob(image_name).public_url
+    name = str(image_id)+"_"+str(label)+"_"+str(date)
+    bucket.blob(name).upload_from_string(image_bytes)
+    image_url = bucket.blob(name).public_url
     return image_url
 
 def bring_from_bucket(image_name:str):
@@ -56,8 +59,6 @@ def get_naver_api(label:str):
     return response['items'][0]
 
 
-# if __name__ == "__main__":
-#     send_to_bucket()
-#     bring_from_bucket
-#     get_naver_api()
+if __name__ == "__main__":
+    send_to_bucket()
 
