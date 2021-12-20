@@ -41,7 +41,7 @@ def get_naver_api(label:str):
     import json
     client_id = st.secrets['gcp']['X-Naver-Client-Id']
     client_secret = st.secrets['gcp']['X-Naver-Client-Secret']
-    # print("client_id",client_id)
+    print("client_id",client_id)
     query = label
     query = urllib.parse.quote(query)
     url = "https://openapi.naver.com/v1/search/shop?query=" + query
@@ -49,15 +49,8 @@ def get_naver_api(label:str):
     request.add_header('X-Naver-Client-Id', client_id)
     request.add_header('X-Naver-Client-Secret', client_secret)
     response = urllib.request.urlopen(request)
-    response = json.load(response)
-    if(len(response['items']) == 0):
-        return "Not Exist"
-    # print(json.dumps(response['items'][0],indent=2))
-    return response['items'][0]
+    return response
 
-
-# if __name__ == "__main__":
-#     send_to_bucket()
-#     bring_from_bucket
-#     get_naver_api()
+if __name__ == "__main__":
+    get_naver_api("343938013")
 
