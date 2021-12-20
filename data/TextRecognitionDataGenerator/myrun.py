@@ -1,5 +1,6 @@
 import argparse
 import random
+import os.path as osp
 import string
 import secrets
 from PIL import Image
@@ -62,7 +63,7 @@ def main(args):
     results = [get_random_string(rand_len, args) for rand_len in rand_lens]
 
     # 이미지 저장을 위한 syns_images 생성
-    Path("./syns").mkdir(parents=False, exist_ok=True)
+    Path(args.dst_dir).mkdir(parents=False, exist_ok=True)
 
     # The generators use the same arguments as the CLI, only as parameters
     generator = GeneratorFromStrings(
@@ -92,7 +93,7 @@ def main(args):
 
     for img, label in generator:
         # print(label)                  # 문자열 출력
-        img.save(f'syns/{label}.jpg') # 이미지 저장
+        img.save(osp.join(args.dst_dir,f'{label}.jpg')) # 이미지 저장
 
 
 if __name__ == "__main__":
@@ -104,8 +105,9 @@ if __name__ == "__main__":
     parser.add_argument("--space", action='store_true', help="if True, space character must be inserted.")
     parser.add_argument("--nospace", action='store_true', help="if True, space character must be NOT inserted.")
     parser.add_argument("--angle", type=int, default=0, help="set angle of text")
+    parser.add_argument("--dst_dir", type=str, default="syns", help="destination directory of generated images.")
 
     args = parser.parse_args()
     main(args)
-    
-    
+
+

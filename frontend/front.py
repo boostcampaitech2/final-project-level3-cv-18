@@ -81,6 +81,7 @@ def main():
         st.write(response.status_code)
         label, confidence_score = response.json().values()
         # 추론 결과 반영
+
         st.subheader(f'label is {label}, {confidence_score}')
         st.write(f"inferance time : ",tm,"second")
         st.subheader("is product code incorrected?")
@@ -93,6 +94,7 @@ def main():
             else : 
                 product_info_print(get_item_info)
                 send_to_bucket(image_name=label,image_bytes=cropped_img_byte)
+
 
 
 if __name__ == "__main__":
