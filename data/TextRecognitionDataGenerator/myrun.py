@@ -15,7 +15,7 @@ from trdg.generators import (
 )
 
 
-TAG_GEN_DICT = "".join([string.ascii_uppercase] + [string.digits] * 3 + ['-'] + [' ']*10)
+TAG_GEN_DICT = "".join([string.ascii_uppercase] + [string.digits] * 3 + [' ']*10 + ["#()-"])
 
 
 
@@ -59,7 +59,7 @@ def main(args):
     total_string = args.n
 
     # 영어 대문자, 숫자, -, 공백을 포함한 랜덤 문자열 생성
-    rand_lens = [random.randint(6, 12) for _ in range(total_string)]
+    rand_lens = [random.randint(args.min_len, args.max_len) for _ in range(total_string)]
     results = [get_random_string(rand_len, args) for rand_len in rand_lens]
 
     # 이미지 저장을 위한 syns_images 생성
@@ -99,6 +99,8 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--n", "--num_of_generated_strings", type=int, default=10, help="the number of generated strings.")
+    parser.add_argument("--min_len", type=int, default=6, help="the max length of generated strings.")
+    parser.add_argument("--max_len", type=int, default=20, help="the min length of generated strings.")
     parser.add_argument("--dash", action='store_true', help="if True, dash character must be inserted.")
     parser.add_argument("--blur", action='store_false', help="if False, character always be blured.")
     parser.add_argument("--blur_power", type=int, default=2, help="Set blur power (recommanded max is 7)")
