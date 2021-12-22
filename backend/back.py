@@ -4,21 +4,17 @@ import torch.nn.functional as F
 
 import io
 import os
-import yaml
+import os.path as osp
+import shutil
 from PIL import Image
 from typing import Tuple, List
 
 from fastapi import FastAPI, File, UploadFile
+from inference.inference import inference
+from container import ModelContainer
 
 
 app = FastAPI()
-INFERENCE_QUERY = \
-"""
-CUDA_VISIBLE_DEVICES=0 python3 ./inference/demo.py \
---Transformation None --FeatureExtraction VGG --SequenceModeling None --Prediction CTC \
---image_folder ./tmp/ \
---saved_model ./inference/model_NoneVggNoneCTC.pth > ./tmp/tmp.txt
-""".strip()
 
 
 @app.post("/prediction/")
@@ -28,25 +24,19 @@ async def get_prediction(files: List[UploadFile] = File(...)):
     image_name = files[0].filename
     image = Image.open(io.BytesIO(image_bytes))
 
-    if not os.path.exists("./tmp"):
+    if not osp.exists("./tmp"):
         os.mkdir("./tmp")
-    image.save(f"./tmp/{image_name}.jpg", "PNG")
+        image.save("./tmp/tmp.jpg", "PNG")
 
-    os.system(INFERENCE_QUERY)
+    model_container = ModelContainer()
+    model, converter, opt = model_container()
+    img_names, preds, confidence_scores = inference(model, converter, opt)
+    label, confidence_score = preds[0], confidence_scores[0]
 
-    with open("./tmp/tmp.txt") as f:
-        output = f.read()
+    if osp.exists("./tmp"):
+        shutil.rmtree("./tmp")
 
-    row = output.split("--------------------------------------------------------------------------------")[-1]
-    row = row.split('\t')
-
-    filename = row[0].strip()
-    label = row[1].strip()
-    conf = row[2].strip()
-
-    os.system("rm -rf ./tmp")
-
-    return {"label": label, "conf":conf}
+    return {"label": label, "conf": confidence_score}
 
 
 def main():
