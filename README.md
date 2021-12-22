@@ -29,7 +29,7 @@
 
 ## 2️⃣ 서비스 흐름도
 
-()[]
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/289852c8-8ed9-4afe-9bdf-eed37155e8fc/Untitled.png)
 
 ## 3️⃣ 서비스 요구사항
 
@@ -38,11 +38,11 @@
 
 ## 4️⃣ 시스템 구조
 
-()[]
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/6714b555-d0bf-4ee5-ac8f-13e7f27da98d/Untitled.png)
 
 ## 5️⃣ 순서도
 
-()[]
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/300c3bfd-1390-4878-82e8-5d2acbb4d564/Untitled.png)
 
 ## 6️⃣ 데이터셋
 
