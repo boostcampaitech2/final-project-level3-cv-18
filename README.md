@@ -62,15 +62,16 @@ Non-alphanumeric character도 인식하는 모델을 선택
 
 ## 8️⃣ 모델 평가
 
-### 8-1. Metric 선정
+### 8-1. 평가 Metric 
 
 - 성능 평가 : Accuracy 
 - 속도 평가 : CPU/GPU 추론 속도
-- 목표 성능 
-    - Accuracy 70% 이상
-    - GPU(V100) 추론 1초 이내  
+
 
 ### 8-2. 정량 평가
+
+- Accuracy 70% 이상
+- GPU(V100) 추론 1초 이내  
 
 ### 8-3. 정성 평가
 
