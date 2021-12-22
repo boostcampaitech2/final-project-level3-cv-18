@@ -13,3 +13,5 @@ log_demo_result.txt
 
 *.pth
 *.pyc
+
+*.toml
