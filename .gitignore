@@ -1,0 +1,15 @@
+.idea
+.ipynb_checkpoints/
+./backend/inference/demo.ipynb
+*.log
+log_demo_result.txt
+
+*.png
+*.jpg
+*.jpeg
+*.PNG
+*.JPG
+*.JPEG
+
+*.pth
+*.pyc
