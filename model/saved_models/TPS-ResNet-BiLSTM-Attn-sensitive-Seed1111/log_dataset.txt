@@ -1,0 +1,15 @@
+--------------------------------------------------------------------------------
+dataset_root: lmdb_result/seung_nospace/
+opt.select_data: ['/']
+opt.batch_ratio: ['1']
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/seung_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 4000
+num total samples of /: 4000 x 1.0 (total_data_usage_ratio) = 4000
+num samples of / per batch: 64 x 1.0 (batch_ratio) = 64
+--------------------------------------------------------------------------------
+Total_batch_size: 64 = 64
+--------------------------------------------------------------------------------
+dataset_root:    lmdb_result/#v3_valid_nospace/	 dataset: /
+sub-directory:	/.	 num samples: 103
+--------------------------------------------------------------------------------

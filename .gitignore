@@ -15,3 +15,6 @@ log_demo_result.txt
 *.pyc
 
 *.toml
+
+./model/pretrained_models
+./wandb/
