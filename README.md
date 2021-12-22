@@ -27,22 +27,24 @@
     - 아이템 수 증가 및 인기 증가로 수집가들의 선호도도 상승, 비싼 가격에 재판매되고 있다.
 
 
-## 2️⃣ 서비스 흐름도
+## 2️⃣ 서비스 흐름
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/289852c8-8ed9-4afe-9bdf-eed37155e8fc/Untitled.png)
+![서비스 흐름](./script/service_flow.PNG)
+
 
 ## 3️⃣ 서비스 요구사항
 
-상품번호 타이핑 시간보다 빠르게 OCR 인식
+상품번호 타이핑 시간보다 빠르게 문자를 인식하고 네이버 쇼핑 검색 결과를 반환
 
 
 ## 4️⃣ 시스템 구조
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/6714b555-d0bf-4ee5-ac8f-13e7f27da98d/Untitled.png)
+![시스템 구조](./script/system_architecture.PNG)
+
 
 ## 5️⃣ 순서도
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/300c3bfd-1390-4878-82e8-5d2acbb4d564/Untitled.png)
+![순서도](./script/flow_chart.PNG)
 
 ## 6️⃣ 데이터셋
 
