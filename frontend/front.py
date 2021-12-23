@@ -31,12 +31,11 @@ def product_info_print(get_item_info):
 @st.cache()
 def get_inference(files):
     start = time.time()
-    #response = requests.post(f"http://{os.environ['BACKEND_HOST']}:8501/prediction/", files=files)
-    response = requests.post(f"http://localhost:8501/prediction/", files=files)
+    response = requests.post(f"http://{os.environ['BACKEND_HOST']}:8501/prediction/", files=files)
 
     end = time.time()
-    tm = end-start
-    return response,tm
+    letency = end-start
+    return response, letency
 
 def main():
 
@@ -69,7 +68,7 @@ def main():
         st.write("Classifying...")
         files = [('files', (uploaded_file.name, cropped_img_byte, uploaded_file.type))]
 
-        response,tm = get_inference(files)
+        response, letency = get_inference(files)
         st.write(response.status_code)
         label, confidence_score = response.json().values()
         st.write(response.json())
@@ -77,7 +76,7 @@ def main():
         # 추론 결과 반영
 
         st.subheader(f'label is {label}, {confidence_score}')
-        st.write(f"inferance time : {tm:.2f}second")
+        st.write(f"inference time : {letency:.2f}second")
         st.subheader("is product code incorrected?")
         label = st.text_input("input correct product code",label)
 
