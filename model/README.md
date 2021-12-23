@@ -17,17 +17,18 @@ $ python3 create_lmdb_dataset.py \
 > Transfromed files is created in the directory named "result".
 
 ## 2. Train 
-Fine-tune with pretrained model. \
+Fine-tune with pretrained model.
 - [Download link of Clova AI's pretrained models](https://www.dropbox.com/sh/j3xmli4di1zuv3s/AAArdcPgz7UFxIHUuKNOeKv_a?dl=0)
 - [Download link of ViTSTR pretrained models](https://github.com/oikosohn/deep-text-recognition-benchmark-1)
 ```bash
-# Training Clova AI
+# training Clova AI best accuracy model TRBA
 CUDA_VISIBLE_DEVICES=0 python3 train.py \
 --train_data result.traindata/ --valid_data result.validdata/ \
---Transformation None --FeatureExtraction VGG --SequenceModeling None --Prediction CTC \
+----Transformation TPS --FeatureExtraction ResNet --SequenceModeling BiLSTM --Prediction Attn \
 --batch_size 32 --num_iter 5000 --valInterval 1000 --input_channel 1 \
---saved_model ./pretrained_models/None-VGG-None-CTC.pth 
+--saved_model ./pretrained_models/TPS-ResNet-BiLSTM-Attn.pth 
 ```
+> Must match Transformation, FeatureExtraction, SequenceModeling, Prediction with saved_model.
 
 ```bash
 # training ViTSTR tiny
@@ -35,12 +36,31 @@ CUDA_VISIBLE_DEVICES=0 python3 train.py \
 --train_data result.traindata/ --valid_data result.validdata/ \
 --Transformation None --FeatureExtraction None  --SequenceModeling None --Prediction None --Transformer \
 --TransformerModel vitstr_tiny_patch16_224 \
+--batch_size 32 --num_iter 5000 --valInterval 1000 --input_channel 1 \
 --imgH 224 --imgW 224 \
 --saved_model ./pretrained_models/vitstr_tiny_patch16_224.pth
 ```
-> Must match Transformation, FeatureExtraction, SequenceModeling, Prediction with saved_model.
 
-## 3. Move trained model
+## 3. Test trained model
+```bash
+# testing None-VGG-None-CTC
+CUDA_VISIBLE_DEVICES=0 python3 test.py \
+--eval_data data_lmdb_release/evaluation --benchmark_all_eval \
+--Transformation TPS --FeatureExtraction ResNet --SequenceModeling BiLSTM --Prediction Attn \
+--saved_model <path_to/best_accuracy.pth>
+```
+
+```bash
+# testing ViTSTR tiny
+CUDA_VISIBLE_DEVICES=0 python3 test.py --eval_data ./data/teamdata_nospace  \
+--Transformation None --FeatureExtraction None \
+--SequenceModeling None --Prediction None --Transformer \
+--TransformerModel=vitstr_tiny_patch16_224 \
+--sensitive --data_filtering_off  --imgH 224 --imgW 224 \
+--saved_model <path_to/best_accuracy.pth>
+```
+
+## 4. Move trained model
 ```bash
 $ mv trained_model.pth ${BACKEND_DIR}
 ```
