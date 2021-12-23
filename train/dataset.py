@@ -13,6 +13,9 @@ from torch.utils.data import Dataset, ConcatDataset, Subset
 from torch._utils import _accumulate
 import torchvision.transforms as transforms
 
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
 
 class Batch_Balanced_Dataset(object):
 
@@ -253,32 +256,43 @@ class RawDataset(Dataset):
 
         return (img, self.image_path_list[index])
 
+    
+class MyAugmentation(object):
+    def __init__(self):
+        self.my_augmentation = transforms.Compose([
+            transforms.RandomPosterize(bits=4, p=0.2),
+            transforms.RandomPerspective(distortion_scale=0.3, p=0.2),
+            transforms.ColorJitter(brightness=(0.3, 1.3), hue=0.0),
+            transforms.RandomInvert(p=0.1),
+            transforms.ToTensor()
+        ])
 
-class ResizeNormalize(object):
+
+class ResizeNormalize(MyAugmentation):
 
     def __init__(self, size, interpolation=Image.BICUBIC):
+        super().__init__()
         self.size = size
         self.interpolation = interpolation
-        self.toTensor = transforms.ToTensor()
 
     def __call__(self, img):
         img = img.resize(self.size, self.interpolation)
-        img = self.toTensor(img)
-        img.sub_(0.5).div_(0.5)
+        img = self.my_augmentation(img)
+        # img.sub_(0.5).div_(0.5)
         return img
 
 
-class NormalizePAD(object):
+class NormalizePAD(MyAugmentation):
 
     def __init__(self, max_size, PAD_type='right'):
-        self.toTensor = transforms.ToTensor()
+        super().__init__()
         self.max_size = max_size
         self.max_width_half = math.floor(max_size[2] / 2)
         self.PAD_type = PAD_type
 
     def __call__(self, img):
-        img = self.toTensor(img)
-        img.sub_(0.5).div_(0.5)
+        img = self.my_augmentation(img)
+        # img.sub_(0.5).div_(0.5)
         c, h, w = img.size()
         Pad_img = torch.FloatTensor(*self.max_size).fill_(0)
         Pad_img[:, :, :w] = img  # right pad
