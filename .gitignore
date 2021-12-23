@@ -1,6 +1,7 @@
 .idea
 .ipynb_checkpoints/
 ./backend/inference/demo.ipynb
+./backend/inference_only_for_demo/*.ipynb
 *.log
 log_demo_result.txt
 
