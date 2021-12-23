@@ -4,6 +4,7 @@ import time
 import random
 import string
 import argparse
+import re
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -12,12 +13,22 @@ import torch.optim as optim
 import torch.utils.data
 import numpy as np
 
-from utils import CTCLabelConverter, CTCLabelConverterForBaiduWarpctc, AttnLabelConverter, Averager
+from utils import CTCLabelConverter, CTCLabelConverterForBaiduWarpctc, AttnLabelConverter, Averager, TokenLabelConverter
 from dataset import hierarchical_dataset, AlignCollate, Batch_Balanced_Dataset
 from model import Model
 from test import validation
+from utils import get_args
+
+import wandb
+import time
+
+from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR, MultiStepLR, ReduceLROnPlateau
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+# wnb_columns = ["Text", "Predicted Sentiment", "True Sentiment", "T/F"]
+
+# python3 train.py --train_data data_lmdb_release/training --valid_data data_lmdb_release/validation --select_data MJ-ST --batch_ratio 0.5-0.5 --Transformation None --FeatureExtraction None --SequenceModeling None --Prediction None --Transformer --imgH 224 --imgW 224
 
 def train(opt):
     """ dataset preparation """
@@ -28,10 +39,14 @@ def train(opt):
 
     opt.select_data = opt.select_data.split('-')
     opt.batch_ratio = opt.batch_ratio.split('-')
+    opt.eval = False
     train_dataset = Batch_Balanced_Dataset(opt)
 
     log = open(f'./saved_models/{opt.exp_name}/log_dataset.txt', 'a')
-    AlignCollate_valid = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD)
+    opt.eval = True
+    if opt.sensitive:
+        opt.data_filtering_off = True
+    AlignCollate_valid = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD, opt=opt)
     valid_dataset, valid_dataset_log = hierarchical_dataset(root=opt.valid_data, opt=opt)
     valid_loader = torch.utils.data.DataLoader(
         valid_dataset, batch_size=opt.batch_size,
@@ -44,7 +59,9 @@ def train(opt):
     log.close()
     
     """ model configuration """
-    if 'CTC' in opt.Prediction:
+    if opt.Transformer:
+        converter = TokenLabelConverter(opt)
+    elif 'CTC' in opt.Prediction:
         if opt.baiduCTC:
             converter = CTCLabelConverterForBaiduWarpctc(opt.character)
         else:
@@ -55,39 +72,40 @@ def train(opt):
 
     if opt.rgb:
         opt.input_channel = 3
+
     model = Model(opt)
-    print('model input parameters', opt.imgH, opt.imgW, opt.num_fiducial, opt.input_channel, opt.output_channel,
-          opt.hidden_size, opt.num_class, opt.batch_max_length, opt.Transformation, opt.FeatureExtraction,
-          opt.SequenceModeling, opt.Prediction)
 
     # weight initialization
-    for name, param in model.named_parameters():
-        if 'localization_fc2' in name:
-            print(f'Skip {name} as it is already initialized')
-            continue
-        try:
-            if 'bias' in name:
-                init.constant_(param, 0.0)
-            elif 'weight' in name:
-                init.kaiming_normal_(param)
-        except Exception as e:  # for batchnorm.
-            if 'weight' in name:
-                param.data.fill_(1)
-            continue
+    if not opt.Transformer:
+        for name, param in model.named_parameters():
+            if 'localization_fc2' in name:
+                print(f'Skip {name} as it is already initialized')
+                continue
+            try:
+                if 'bias' in name:
+                    init.constant_(param, 0.0)
+                elif 'weight' in name:
+                    init.kaiming_normal_(param)
+            except Exception as e:  # for batchnorm.
+                if 'weight' in name:
+                    param.data.fill_(1)
+                continue
 
     # data parallel for multi-GPU
     model = torch.nn.DataParallel(model).to(device)
     model.train()
+    wandb.watch(model)
     if opt.saved_model != '':
         print(f'loading pretrained model from {opt.saved_model}')
         if opt.FT:
             model.load_state_dict(torch.load(opt.saved_model), strict=False)
         else:
             model.load_state_dict(torch.load(opt.saved_model))
-    print("Model:")
-    print(model)
+    #print("Model:")
+    #print(model)
 
     """ setup loss """
+    # README: https://github.com/clovaai/deep-text-recognition-benchmark/pull/209
     if 'CTC' in opt.Prediction:
         if opt.baiduCTC:
             # need to install warpctc. see our guideline.
@@ -106,16 +124,18 @@ def train(opt):
     for p in filter(lambda p: p.requires_grad, model.parameters()):
         filtered_parameters.append(p)
         params_num.append(np.prod(p.size()))
-    print('Trainable params num : ', sum(params_num))
+    # print('Trainable params num : ', sum(params_num))
     # [print(name, p.numel()) for name, p in filter(lambda p: p[1].requires_grad, model.named_parameters())]
 
     # setup optimizer
+    scheduler = None
     if opt.adam:
         optimizer = optim.Adam(filtered_parameters, lr=opt.lr, betas=(opt.beta1, 0.999))
     else:
         optimizer = optim.Adadelta(filtered_parameters, lr=opt.lr, rho=opt.rho, eps=opt.eps)
-    print("Optimizer:")
-    print(optimizer)
+
+    if opt.scheduler:
+        scheduler = CosineAnnealingLR(optimizer, T_max=opt.num_iter)
 
     """ final options """
     # print(opt)
@@ -125,8 +145,12 @@ def train(opt):
         for k, v in args.items():
             opt_log += f'{str(k)}: {str(v)}\n'
         opt_log += '---------------------------------------\n'
-        print(opt_log)
+        #print(opt_log)
         opt_file.write(opt_log)
+        total_params = int(sum(params_num))
+        total_params = f'Trainable network params num : {total_params:,}'
+        print(total_params)
+        opt_file.write(total_params)
 
     """ start training """
     start_iter = 0
@@ -146,7 +170,8 @@ def train(opt):
         # train part
         image_tensors, labels = train_dataset.get_batch()
         image = image_tensors.to(device)
-        text, length = converter.encode(labels, batch_max_length=opt.batch_max_length)
+        if not opt.Transformer:
+            text, length = converter.encode(labels, batch_max_length=opt.batch_max_length)
         batch_size = image.size(0)
 
         if 'CTC' in opt.Prediction:
@@ -158,7 +183,10 @@ def train(opt):
             else:
                 preds = preds.log_softmax(2).permute(1, 0, 2)
                 cost = criterion(preds, text, preds_size, length)
-
+        elif opt.Transformer:
+            target = converter.encode(labels)
+            preds = model(image, text=target, seqlen=converter.batch_max_length)
+            cost = criterion(preds.view(-1, preds.shape[-1]), target.contiguous().view(-1))
         else:
             preds = model(image, text[:, :-1])  # align with Attention.forward
             target = text[:, 1:]  # without [GO] Symbol
@@ -200,23 +228,42 @@ def train(opt):
                 loss_model_log = f'{loss_log}\n{current_model_log}\n{best_model_log}'
                 print(loss_model_log)
                 log.write(loss_model_log + '\n')
-
+                
                 # show some predicted results
                 dashed_line = '-' * 80
                 head = f'{"Ground Truth":25s} | {"Prediction":25s} | Confidence Score & T/F'
                 predicted_result_log = f'{dashed_line}\n{head}\n{dashed_line}\n'
                 for gt, pred, confidence in zip(labels[:5], preds[:5], confidence_score[:5]):
-                    if 'Attn' in opt.Prediction:
+                    if opt.Transformer:
+                        pred = pred[:pred.find('[s]')]
+                    elif 'Attn' in opt.Prediction:
                         gt = gt[:gt.find('[s]')]
                         pred = pred[:pred.find('[s]')]
+                        
+                    # data = [f"{gt:25s}", f"{pred:25s}", f"{confidence:0.4f}", f"{str(pred == gt)}"]
+                    # table =  wandb.Table(data=data, columns=wnb_columns)
+                    # wandb.log({"Predicted_result_log": table}, step=iteration+1)
+                    
+                    # # To evaluate 'case sensitive model' with alphanumeric and case insensitve setting.
+                    # if opt.sensitive and opt.data_filtering_off:
+                    #     pred = pred.lower()
+                    #     gt = gt.lower()
+                    #     alphanumeric_case_insensitve = '0123456789abcdefghijklmnopqrstuvwxyz'
+                    #     out_of_alphanumeric_case_insensitve = f'[^{alphanumeric_case_insensitve}]'
+                    #     pred = re.sub(out_of_alphanumeric_case_insensitve, '', pred)
+                    #     gt = re.sub(out_of_alphanumeric_case_insensitve, '', gt)
 
                     predicted_result_log += f'{gt:25s} | {pred:25s} | {confidence:0.4f}\t{str(pred == gt)}\n'
                 predicted_result_log += f'{dashed_line}'
                 print(predicted_result_log)
                 log.write(predicted_result_log + '\n')
 
+                wandb.log({'Train/loss': loss_avg.val(),'Train/Acc': current_accuracy,'Train/Norm_ED':current_norm_ED, \
+                           'Train/Elapsed_time': elapsed_time, 'Valid/loss': valid_loss, }, step=iteration+1)
+                
+                
         # save model per 1e+5 iter.
-        if (iteration + 1) % 1e+5 == 0:
+        if (iteration + 1) % 1e+4 == 0:
             torch.save(
                 model.state_dict(), f'./saved_models/{opt.exp_name}/iter_{iteration+1}.pth')
 
@@ -224,80 +271,25 @@ def train(opt):
             print('end the training')
             sys.exit()
         iteration += 1
+        if scheduler is not None:
+            scheduler.step()
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--exp_name', help='Where to store logs and models')
-    parser.add_argument('--train_data', required=True, help='path to training dataset')
-    parser.add_argument('--valid_data', required=True, help='path to validation dataset')
-    parser.add_argument('--manualSeed', type=int, default=1111, help='for random seed setting')
-    parser.add_argument('--workers', type=int, help='number of data loading workers', default=4)
-    parser.add_argument('--batch_size', type=int, default=192, help='input batch size')
-    parser.add_argument('--num_iter', type=int, default=300000, help='number of iterations to train for')
-    parser.add_argument('--valInterval', type=int, default=2000, help='Interval between each validation')
-    parser.add_argument('--saved_model', default='', help="path to model to continue training")
-    parser.add_argument('--FT', action='store_true', help='whether to do fine-tuning')
-    parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is Adadelta)')
-    parser.add_argument('--lr', type=float, default=1, help='learning rate, default=1.0 for Adadelta')
-    parser.add_argument('--beta1', type=float, default=0.9, help='beta1 for adam. default=0.9')
-    parser.add_argument('--rho', type=float, default=0.95, help='decay rate rho for Adadelta. default=0.95')
-    parser.add_argument('--eps', type=float, default=1e-8, help='eps for Adadelta. default=1e-8')
-    parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping value. default=5')
-    parser.add_argument('--baiduCTC', action='store_true', help='for data_filtering_off mode')
-    
-    """ Data processing """
-    # parser.add_argument('--select_data', type=str, default='MJ-ST',
-    #                     help='select training data (default is MJ-ST, which means MJ and ST used as training data)')
-    # parser.add_argument('--batch_ratio', type=str, default='0.5-0.5',
-    #                     help='assign ratio for each selected data in the batch')
-    parser.add_argument('--select_data', type=str, default='/', 
-                     help='select training data (default is MJ-ST, which means MJ and ST used as training data)') 
-    parser.add_argument('--batch_ratio', type=str, default='1', 
-                     help='assign ratio for each selected data in the batch') 
-    
-    parser.add_argument('--total_data_usage_ratio', type=str, default='1.0',
-                        help='total data usage ratio, this ratio is multiplied to total number of data.')
-    parser.add_argument('--batch_max_length', type=int, default=25, help='maximum-label-length')
-    parser.add_argument('--imgH', type=int, default=32, help='the height of the input image')
-    parser.add_argument('--imgW', type=int, default=100, help='the width of the input image')
-    parser.add_argument('--rgb', action='store_true', help='use rgb input')
-    
-    parser.add_argument('--character', type=str,
-                        default='0123456789abcdefghijklmnopqrstuvwxyz', help='character label')
-    
-    parser.add_argument('--sensitive', action='store_true', help='for sensitive character mode')
-    parser.add_argument('--PAD', action='store_true', help='whether to keep ratio then pad for image resize')
-    parser.add_argument('--data_filtering_off', action='store_true', help='for data_filtering_off mode')
-    """ Model Architecture """
-    parser.add_argument('--Transformation', type=str, required=True, help='Transformation stage. None|TPS')
-    parser.add_argument('--FeatureExtraction', type=str, required=True,
-                        help='FeatureExtraction stage. VGG|RCNN|ResNet')
-    parser.add_argument('--SequenceModeling', type=str, required=True, help='SequenceModeling stage. None|BiLSTM')
-    parser.add_argument('--Prediction', type=str, required=True, help='Prediction stage. CTC|Attn')
-    parser.add_argument('--num_fiducial', type=int, default=20, help='number of fiducial points of TPS-STN')
-    parser.add_argument('--input_channel', type=int, default=1,
-                        help='the number of input channel of Feature extractor')
-    parser.add_argument('--output_channel', type=int, default=512,
-                        help='the number of output channel of Feature extractor')
-    parser.add_argument('--hidden_size', type=int, default=256, help='the size of the LSTM hidden state')
 
-    opt = parser.parse_args()
+    opt = get_args()
 
     if not opt.exp_name:
-        opt.exp_name = f'{opt.Transformation}-{opt.FeatureExtraction}-{opt.SequenceModeling}-{opt.Prediction}'
-        opt.exp_name += f'-Seed{opt.manualSeed}'
-        # print(opt.exp_name)
+        utc = time.strftime('%Y-%m-%d_%H:%M:%SZ', time.localtime())
+        opt.exp_name = f'{opt.TransformerModel}-{utc}' if opt.Transformer else f'{opt.Transformation}-{opt.FeatureExtraction}-{opt.SequenceModeling}-{opt.Prediction}-{utc}'
+        print(opt.exp_name)
 
+    if not opt.wnb_name:
+        opt.wnb_name = opt.exp_name
+        
     os.makedirs(f'./saved_models/{opt.exp_name}', exist_ok=True)
 
-    """ vocab / character number configuration """
-    if opt.sensitive:
-        # opt.character += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        opt.character = string.printable[:-6]  # same with ASTER setting (use 94 char).
-
     """ Seed and GPU setting """
-    # print("Random Seed: ", opt.manualSeed)
     random.seed(opt.manualSeed)
     np.random.seed(opt.manualSeed)
     torch.manual_seed(opt.manualSeed)
@@ -305,8 +297,16 @@ if __name__ == '__main__':
 
     cudnn.benchmark = True
     cudnn.deterministic = True
+    
+    """ vocab / character number configuration """
+    if opt.sensitive:
+        opt.character = string.printable[:-6]  # same with ASTER setting (use 94 char).
+
     opt.num_gpu = torch.cuda.device_count()
-    # print('device count', opt.num_gpu)
+
+    if opt.workers <= 0:
+        opt.workers = (os.cpu_count() // 2) // opt.num_gpu
+
     if opt.num_gpu > 1:
         print('------ Use multi-GPU setting ------')
         print('if you stuck too long time with multi-GPU setting, try to set --workers 0')
@@ -321,5 +321,16 @@ if __name__ == '__main__':
         If you dont care about it, just commnet out these line.)
         opt.num_iter = int(opt.num_iter / opt.num_gpu)
         """
-
+        
+    # wandb login and init
+    print('WNB name :',opt.wnb_name)
+    wandb.login()
+    wandb.init(entity = opt.wnb_entity, # 팀 지정
+               project = opt.wnb_project, # 폴더 지정 
+               name = opt.wnb_name
+              )
+    wandb.config.update(opt)    
+    
+    print(opt)
+    
     train(opt)

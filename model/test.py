@@ -3,6 +3,7 @@ import time
 import string
 import argparse
 import re
+import validators
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -11,23 +12,26 @@ import torch.nn.functional as F
 import numpy as np
 from nltk.metrics.distance import edit_distance
 
-from utils import CTCLabelConverter, AttnLabelConverter, Averager
+from utils import CTCLabelConverter, AttnLabelConverter, Averager, TokenLabelConverter
 from dataset import hierarchical_dataset, AlignCollate
 from model import Model
+from utils import get_args
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def benchmark_all_eval(model, criterion, converter, opt, calculate_infer_time=False):
+def benchmark_all_eval(model, criterion, converter, opt): #, calculate_infer_time=False):
     """ evaluation with 10 benchmark evaluation datasets """
-    # The evaluation datasets, dataset order is same with Table 1 in our paper.
-    eval_data_list = ['IIIT5k_3000', 'SVT', 'IC03_860', 'IC03_867', 'IC13_857',
-                      'IC13_1015', 'IC15_1811', 'IC15_2077', 'SVTP', 'CUTE80']
 
+    if opt.fast_acc:
     # # To easily compute the total accuracy of our paper.
-    # eval_data_list = ['IIIT5k_3000', 'SVT', 'IC03_867', 
-    #                   'IC13_1015', 'IC15_2077', 'SVTP', 'CUTE80']
+        eval_data_list = ['IIIT5k_3000', 'SVT', 'IC03_867', 'IC13_1015', 'IC15_2077', 'SVTP', 'CUTE80']
+    else:
+        # The evaluation datasets, dataset order is same with Table 1 in our paper.
+        eval_data_list = ['IIIT5k_3000', 'SVT', 'IC03_860', 'IC03_867', 'IC13_857',
+                          'IC13_1015', 'IC15_1811', 'IC15_2077', 'SVTP', 'CUTE80']
 
-    if calculate_infer_time:
+    if opt.calculate_infer_time:
         evaluation_batch_size = 1  # batch_size should be 1 to calculate the GPU inference time per image.
     else:
         evaluation_batch_size = opt.batch_size
@@ -42,7 +46,7 @@ def benchmark_all_eval(model, criterion, converter, opt, calculate_infer_time=Fa
     log.write(dashed_line + '\n')
     for eval_data in eval_data_list:
         eval_data_path = os.path.join(opt.eval_data, eval_data)
-        AlignCollate_evaluation = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD)
+        AlignCollate_evaluation = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD, opt=opt)
         eval_data, eval_data_log = hierarchical_dataset(root=eval_data_path, opt=opt)
         evaluation_loader = torch.utils.data.DataLoader(
             eval_data, batch_size=evaluation_batch_size,
@@ -71,6 +75,8 @@ def benchmark_all_eval(model, criterion, converter, opt, calculate_infer_time=Fa
         evaluation_log += f'{name}: {accuracy}\t'
     evaluation_log += f'total_accuracy: {total_accuracy:0.3f}\t'
     evaluation_log += f'averaged_infer_time: {averaged_forward_time:0.3f}\t# parameters: {params_num/1e6:0.3f}'
+    if opt.flops:
+        evaluation_log += get_flops(model, opt, converter)
     print(evaluation_log)
     log.write(evaluation_log + '\n')
     log.close()
@@ -91,10 +97,12 @@ def validation(model, criterion, evaluation_loader, converter, opt):
         length_of_data = length_of_data + batch_size
         image = image_tensors.to(device)
         # For max length prediction
-        length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
-        text_for_pred = torch.LongTensor(batch_size, opt.batch_max_length + 1).fill_(0).to(device)
-
-        text_for_loss, length_for_loss = converter.encode(labels, batch_max_length=opt.batch_max_length)
+        if opt.Transformer:
+            target = converter.encode(labels)
+        else:
+            length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
+            text_for_pred = torch.LongTensor(batch_size, opt.batch_max_length + 1).fill_(0).to(device)
+            text_for_loss, length_for_loss = converter.encode(labels, batch_max_length=opt.batch_max_length)
 
         start_time = time.time()
         if 'CTC' in opt.Prediction:
@@ -117,6 +125,15 @@ def validation(model, criterion, evaluation_loader, converter, opt):
                 _, preds_index = preds.max(2)
             preds_str = converter.decode(preds_index.data, preds_size.data)
         
+        elif opt.Transformer:
+            preds = model(image, text=target, seqlen=converter.batch_max_length)
+            _, preds_index = preds.topk(1, dim=-1, largest=True, sorted=True)
+            preds_index = preds_index.view(-1, converter.batch_max_length)
+            forward_time = time.time() - start_time
+            cost = criterion(preds.contiguous().view(-1, preds.shape[-1]), target.contiguous().view(-1))
+
+            length_for_pred = torch.IntTensor([converter.batch_max_length - 1] * batch_size).to(device)
+            preds_str = converter.decode(preds_index[:, 1:], length_for_pred)
         else:
             preds = model(image, text_for_pred, is_train=False)
             forward_time = time.time() - start_time
@@ -138,20 +155,24 @@ def validation(model, criterion, evaluation_loader, converter, opt):
         preds_max_prob, _ = preds_prob.max(dim=2)
         confidence_score_list = []
         for gt, pred, pred_max_prob in zip(labels, preds_str, preds_max_prob):
-            if 'Attn' in opt.Prediction:
+            if  opt.Transformer:
+                pred_EOS = pred.find('[s]')
+                pred = pred[:pred_EOS]  # prune after "end of sentence" token ([s])
+                pred_max_prob = pred_max_prob[:pred_EOS]
+            elif 'Attn' in opt.Prediction:
                 gt = gt[:gt.find('[s]')]
                 pred_EOS = pred.find('[s]')
                 pred = pred[:pred_EOS]  # prune after "end of sentence" token ([s])
                 pred_max_prob = pred_max_prob[:pred_EOS]
 
             # To evaluate 'case sensitive model' with alphanumeric and case insensitve setting.
-            if opt.sensitive and opt.data_filtering_off:
-                pred = pred.lower()
-                gt = gt.lower()
-                alphanumeric_case_insensitve = '0123456789abcdefghijklmnopqrstuvwxyz'
-                out_of_alphanumeric_case_insensitve = f'[^{alphanumeric_case_insensitve}]'
-                pred = re.sub(out_of_alphanumeric_case_insensitve, '', pred)
-                gt = re.sub(out_of_alphanumeric_case_insensitve, '', gt)
+            # if opt.sensitive and opt.data_filtering_off:
+            #     pred = pred.lower()
+            #     gt = gt.lower()
+            #     alphanumeric_case_insensitve = '0123456789abcdefghijklmnopqrstuvwxyz'
+            #     out_of_alphanumeric_case_insensitve = f'[^{alphanumeric_case_insensitve}]'
+            #     pred = re.sub(out_of_alphanumeric_case_insensitve, '', pred)
+            #     gt = re.sub(out_of_alphanumeric_case_insensitve, '', gt)
 
             if pred == gt:
                 n_correct += 1
@@ -189,15 +210,18 @@ def validation(model, criterion, evaluation_loader, converter, opt):
 
 def test(opt):
     """ model configuration """
-    if 'CTC' in opt.Prediction:
+    if opt.Transformer:
+        converter = TokenLabelConverter(opt)
+    elif 'CTC' in opt.Prediction:
         converter = CTCLabelConverter(opt.character)
     else:
         converter = AttnLabelConverter(opt.character)
     opt.num_class = len(converter.character)
-
+    
     if opt.rgb:
         opt.input_channel = 3
     model = Model(opt)
+
     print('model input parameters', opt.imgH, opt.imgW, opt.num_fiducial, opt.input_channel, opt.output_channel,
           opt.hidden_size, opt.num_class, opt.batch_max_length, opt.Transformation, opt.FeatureExtraction,
           opt.SequenceModeling, opt.Prediction)
@@ -205,7 +229,11 @@ def test(opt):
 
     # load model
     print('loading pretrained model from %s' % opt.saved_model)
-    model.load_state_dict(torch.load(opt.saved_model, map_location=device))
+
+    if validators.url(opt.saved_model):
+        model.load_state_dict(torch.hub.load_state_dict_from_url(opt.saved_model, progress=True, map_location=device))
+    else:
+        model.load_state_dict(torch.load(opt.saved_model, map_location=device))
     opt.exp_name = '_'.join(opt.saved_model.split('/')[1:])
     # print(model)
 
@@ -221,12 +249,13 @@ def test(opt):
 
     """ evaluation """
     model.eval()
+    opt.eval = True
     with torch.no_grad():
         if opt.benchmark_all_eval:  # evaluation with 10 benchmark evaluation datasets
             benchmark_all_eval(model, criterion, converter, opt)
         else:
             log = open(f'./result/{opt.exp_name}/log_evaluation.txt', 'a')
-            AlignCollate_evaluation = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD)
+            AlignCollate_evaluation = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD, opt=opt)
             eval_data, eval_data_log = hierarchical_dataset(root=opt.eval_data, opt=opt)
             evaluation_loader = torch.utils.data.DataLoader(
                 eval_data, batch_size=opt.batch_size,
@@ -240,36 +269,27 @@ def test(opt):
             log.write(f'{accuracy_by_best_model:0.3f}\n')
             log.close()
 
+# https://github.com/clovaai/deep-text-recognition-benchmark/issues/125
+def get_flops(model, opt, converter):
+    from thop import profile
+    input = torch.randn(1, 1, opt.imgH, opt.imgW).to(device)
+    model = model.to(device)
+    if opt.Transformer:
+        seqlen = converter.batch_max_length
+        text_for_pred = torch.LongTensor(1, seqlen).fill_(0).to(device)
+        #preds = model(image, text=target, seqlen=converter.batch_max_length)
+        MACs, params = profile(model, inputs=(input, text_for_pred, True, seqlen))
+    else:
+        text_for_pred = torch.LongTensor(1, opt.batch_max_length + 1).fill_(0).to(device)
+        #model_ = Model(opt).to(device)
+        MACs, params = profile(model, inputs=(input, text_for_pred, ))
+
+    flops = 2 * MACs # approximate FLOPS
+    return f'Approximate FLOPS: {flops:0.3f}'
+
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--eval_data', required=True, help='path to evaluation dataset')
-    parser.add_argument('--benchmark_all_eval', action='store_true', help='evaluate 10 benchmark evaluation datasets')
-    parser.add_argument('--workers', type=int, help='number of data loading workers', default=4)
-    parser.add_argument('--batch_size', type=int, default=192, help='input batch size')
-    parser.add_argument('--saved_model', required=True, help="path to saved_model to evaluation")
-    """ Data processing """
-    parser.add_argument('--batch_max_length', type=int, default=25, help='maximum-label-length')
-    parser.add_argument('--imgH', type=int, default=32, help='the height of the input image')
-    parser.add_argument('--imgW', type=int, default=100, help='the width of the input image')
-    parser.add_argument('--rgb', action='store_true', help='use rgb input')
-    parser.add_argument('--character', type=str, default='0123456789abcdefghijklmnopqrstuvwxyz', help='character label')
-    parser.add_argument('--sensitive', action='store_true', help='for sensitive character mode')
-    parser.add_argument('--PAD', action='store_true', help='whether to keep ratio then pad for image resize')
-    parser.add_argument('--data_filtering_off', action='store_true', help='for data_filtering_off mode')
-    parser.add_argument('--baiduCTC', action='store_true', help='for data_filtering_off mode')
-    """ Model Architecture """
-    parser.add_argument('--Transformation', type=str, required=True, help='Transformation stage. None|TPS')
-    parser.add_argument('--FeatureExtraction', type=str, required=True, help='FeatureExtraction stage. VGG|RCNN|ResNet')
-    parser.add_argument('--SequenceModeling', type=str, required=True, help='SequenceModeling stage. None|BiLSTM')
-    parser.add_argument('--Prediction', type=str, required=True, help='Prediction stage. CTC|Attn')
-    parser.add_argument('--num_fiducial', type=int, default=20, help='number of fiducial points of TPS-STN')
-    parser.add_argument('--input_channel', type=int, default=1, help='the number of input channel of Feature extractor')
-    parser.add_argument('--output_channel', type=int, default=512,
-                        help='the number of output channel of Feature extractor')
-    parser.add_argument('--hidden_size', type=int, default=256, help='the size of the LSTM hidden state')
-
-    opt = parser.parse_args()
+    opt = get_args(is_train=False)
 
     """ vocab / character number configuration """
     if opt.sensitive:

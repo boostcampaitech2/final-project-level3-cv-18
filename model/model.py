@@ -20,6 +20,7 @@ from modules.transformation import TPS_SpatialTransformerNetwork
 from modules.feature_extraction import VGG_FeatureExtractor, RCNN_FeatureExtractor, ResNet_FeatureExtractor
 from modules.sequence_modeling import BidirectionalLSTM
 from modules.prediction import Attention
+from modules.vitstr import create_vitstr
 
 
 class Model(nn.Module):
@@ -28,7 +29,8 @@ class Model(nn.Module):
         super(Model, self).__init__()
         self.opt = opt
         self.stages = {'Trans': opt.Transformation, 'Feat': opt.FeatureExtraction,
-                       'Seq': opt.SequenceModeling, 'Pred': opt.Prediction}
+                       'Seq': opt.SequenceModeling, 'Pred': opt.Prediction,
+                       'ViTSTR': opt.Transformer}
 
         """ Transformation """
         if opt.Transformation == 'TPS':
@@ -36,6 +38,10 @@ class Model(nn.Module):
                 F=opt.num_fiducial, I_size=(opt.imgH, opt.imgW), I_r_size=(opt.imgH, opt.imgW), I_channel_num=opt.input_channel)
         else:
             print('No Transformation module specified')
+
+        if opt.Transformer:
+            self.vitstr = create_vitstr(num_tokens=opt.num_class, model=opt.TransformerModel)
+            return
 
         """ FeatureExtraction """
         if opt.FeatureExtraction == 'VGG':
@@ -67,10 +73,14 @@ class Model(nn.Module):
         else:
             raise Exception('Prediction is neither CTC or Attn')
 
-    def forward(self, input, text, is_train=True):
+    def forward(self, input, text, is_train=True, seqlen=25):
         """ Transformation stage """
         if not self.stages['Trans'] == "None":
             input = self.Transformation(input)
+
+        if self.stages['ViTSTR']:
+            prediction = self.vitstr(input, seqlen=seqlen)
+            return prediction
 
         """ Feature extraction stage """
         visual_feature = self.FeatureExtraction(input)
@@ -90,3 +100,4 @@ class Model(nn.Module):
             prediction = self.Prediction(contextual_feature.contiguous(), text, is_train, batch_max_length=self.opt.batch_max_length)
 
         return prediction
+

@@ -1,0 +1,14 @@
+validators==0.18.2
+torch==1.8.1
+torchvision==0.9.1
+timm==0.4.5
+lmdb==1.2.1
+pillow>=8.3.2
+nltk>=3.6.4
+natsort==7.1.0
+opencv-python==4.5.1.48
+opencv-contrib-python==4.5.1.48
+wand==0.6.6
+scikit-image
+albermentation
+opencv-contrib-python-headless

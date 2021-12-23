@@ -6,16 +6,37 @@ import math
 import lmdb
 import torch
 
+from augmentation.weather import Fog, Snow, Frost
+from augmentation.warp import Curve, Distort, Stretch
+from augmentation.geometry import Rotate, Perspective, Shrink, TranslateX, TranslateY
+from augmentation.pattern import VGrid, HGrid, Grid, RectGrid, EllipseGrid
+from augmentation.noise import GaussianNoise, ShotNoise, ImpulseNoise, SpeckleNoise
+from augmentation.blur import GaussianBlur, DefocusBlur, MotionBlur, GlassBlur, ZoomBlur
+from augmentation.camera import Contrast, Brightness, JpegCompression, Pixelate
+from augmentation.weather import Fog, Snow, Frost, Rain, Shadow
+from augmentation.process import Posterize, Solarize, Invert, Equalize, AutoContrast, Sharpness, Color
+
 from natsort import natsorted
 from PIL import Image
+import PIL.ImageOps
 import numpy as np
 from torch.utils.data import Dataset, ConcatDataset, Subset
 from torch._utils import _accumulate
 import torchvision.transforms as transforms
+import torchvision.transforms.functional as TF
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
+class MyAugmentation(object):
+    def __init__(self):
+        self.my_augmentation = transforms.Compose([
+            transforms.RandomPosterize(bits=4, p=0.2),
+            transforms.RandomPerspective(distortion_scale=0.3, p=0.2),
+            transforms.ColorJitter(brightness=(0.3, 1.3), hue=0.0),
+            transforms.RandomInvert(p=0.1),
+            transforms.ToTensor()
+        ])
 
 class Batch_Balanced_Dataset(object):
 
@@ -33,7 +54,7 @@ class Batch_Balanced_Dataset(object):
         log.write(f'dataset_root: {opt.train_data}\nopt.select_data: {opt.select_data}\nopt.batch_ratio: {opt.batch_ratio}\n')
         assert len(opt.select_data) == len(opt.batch_ratio)
 
-        _AlignCollate = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD)
+        _AlignCollate = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD, opt=opt)
         self.data_loader_list = []
         self.dataloader_iter_list = []
         batch_size_list = []
@@ -93,7 +114,6 @@ class Batch_Balanced_Dataset(object):
             except StopIteration:
                 self.dataloader_iter_list[i] = iter(self.data_loader_list[i])
                 image, text = self.dataloader_iter_list[i].next()
-                
                 balanced_batch_images.append(image)
                 balanced_batch_texts += text
             except ValueError:
@@ -256,24 +276,169 @@ class RawDataset(Dataset):
 
         return (img, self.image_path_list[index])
 
-    
-class MyAugmentation(object):
-    def __init__(self):
-        self.my_augmentation = transforms.Compose([
-            transforms.RandomPosterize(bits=4, p=0.2),
-            transforms.RandomPerspective(distortion_scale=0.3, p=0.2),
-            transforms.ColorJitter(brightness=(0.3, 1.3), hue=0.0),
-            transforms.RandomInvert(p=0.1),
-            transforms.ToTensor()
-        ])
+
+def is_less(prob=0.5):
+    return np.random.uniform(0,1) < prob
+
+class DataAugment(object):
+    '''
+    Supports with and without data augmentation 
+    '''
+    def __init__(self, opt):
+        self.opt = opt
+
+        if not opt.eval:
+            self.process = [Posterize(), Solarize(), Invert(), Equalize(), AutoContrast(), Sharpness(), Color()]
+            self.camera = [Contrast(), Brightness(), JpegCompression(), Pixelate()]
+
+            self.pattern = [VGrid(), HGrid(), Grid(), RectGrid(), EllipseGrid()]
+
+            self.noise = [GaussianNoise(), ShotNoise(), ImpulseNoise(), SpeckleNoise()]
+            self.blur = [GaussianBlur(), DefocusBlur(), MotionBlur(), GlassBlur(), ZoomBlur()]
+            self.weather = [Fog(), Snow(), Frost(), Rain(), Shadow()]
+
+            self.noises = [self.blur, self.noise, self.weather]
+            self.processes = [self.camera, self.process]
+
+            self.warp = [Curve(), Distort(), Stretch()]
+            self.geometry = [Rotate(), Perspective(), Shrink()]
+
+            self.isbaseline_aug = False
+            # rand augment
+            if self.opt.isrand_aug:
+                self.augs = [self.process, self.camera, self.noise, self.blur, self.weather, self.pattern, self.warp, self.geometry]
+            # semantic augment
+            elif self.opt.issemantic_aug:
+                self.geometry = [Rotate(), Perspective(), Shrink()]
+                self.noise = [GaussianNoise()]
+                self.blur = [MotionBlur()]
+                self.augs = [self.noise, self.blur, self.geometry]
+                self.isbaseline_aug = True
+            # pp-ocr augment
+            elif self.opt.islearning_aug:
+                self.geometry = [Rotate(), Perspective()]
+                self.noise = [GaussianNoise()]
+                self.blur = [MotionBlur()]
+                self.warp = [Distort()]
+                self.augs = [self.warp, self.noise, self.blur, self.geometry]
+                self.isbaseline_aug = True
+            # scatter augment
+            elif self.opt.isscatter_aug:
+                self.geometry = [Shrink()]
+                self.warp = [Distort()]
+                self.augs = [self.warp, self.geometry]
+                self.baseline_aug = True
+            # rotation augment
+            elif self.opt.isrotation_aug:
+                self.geometry = [Rotate()]
+                self.augs = [self.geometry]
+                self.isbaseline_aug = True
+
+        self.scale = False if opt.Transformer else True
+
+    def __call__(self, img):
+        '''
+            Must call img.copy() if pattern, Rain or Shadow is used
+        '''
+        img = img.resize((self.opt.imgW, self.opt.imgH), Image.BICUBIC)
+
+        if self.opt.eval or is_less(self.opt.intact_prob):
+            pass
+        elif self.opt.isrand_aug or self.isbaseline_aug:
+            img = self.rand_aug(img)
+        # individual augment can also be selected
+        elif self.opt.issel_aug:
+            img = self.sel_aug(img)
+
+        img = transforms.ToTensor()(img)
+        if self.scale:
+            img.sub_(0.5).div_(0.5)
+        return img
+
+
+    def rand_aug(self, img):
+        augs = np.random.choice(self.augs, self.opt.augs_num, replace=False)
+        for aug in augs:
+            index = np.random.randint(0, len(aug))
+            op = aug[index]
+            mag = np.random.randint(0, 3) if self.opt.augs_mag is None else self.opt.augs_mag
+            if type(op).__name__ == "Rain"  or type(op).__name__ == "Grid":
+                img = op(img.copy(), mag=mag)
+            else:
+                img = op(img, mag=mag)
+
+        return img
+
+    def sel_aug(self, img):
+
+        prob = 1.
+
+        if self.opt.process:
+            mag = np.random.randint(0, 3)
+            index = np.random.randint(0, len(self.process))
+            op = self.process[index]
+            img = op(img, mag=mag, prob=prob)
+
+        if self.opt.noise:
+            mag = np.random.randint(0, 3)
+            index = np.random.randint(0, len(self.noise))
+            op = self.noise[index]
+            img = op(img, mag=mag, prob=prob)
+
+        if self.opt.blur:
+            mag = np.random.randint(0, 3)
+            index = np.random.randint(0, len(self.blur))
+            op = self.blur[index]
+            img = op(img, mag=mag, prob=prob)
+
+        if self.opt.weather:
+            mag = np.random.randint(0, 3)
+            index = np.random.randint(0, len(self.weather))
+            op = self.weather[index]
+            if type(op).__name__ == "Rain": #or "Grid" in type(op).__name__ :
+                img = op(img.copy(), mag=mag, prob=prob)
+            else:
+                img = op(img, mag=mag, prob=prob)
+
+        if self.opt.camera:
+            mag = np.random.randint(0, 3)
+            index = np.random.randint(0, len(self.camera))
+            op = self.camera[index]
+            img = op(img, mag=mag, prob=prob)
+
+        if self.opt.pattern:
+            mag = np.random.randint(0, 3)
+            index = np.random.randint(0, len(self.pattern))
+            op = self.pattern[index]
+            img = op(img.copy(), mag=mag, prob=prob)
+
+        iscurve = False
+        if self.opt.warp:
+            mag = np.random.randint(0, 3)
+            index = np.random.randint(0, len(self.warp))
+            op = self.warp[index]
+            if type(op).__name__ == "Curve":
+                iscurve = True
+            img = op(img, mag=mag, prob=prob)
+
+        if self.opt.geometry:
+            mag = np.random.randint(0, 3)
+            index = np.random.randint(0, len(self.geometry))
+            op = self.geometry[index]
+            if type(op).__name__ == "Rotate":
+                img = op(img, iscurve=iscurve, mag=mag, prob=prob)
+            else:
+                img = op(img, mag=mag, prob=prob)
+
+        return img
 
 
 class ResizeNormalize(MyAugmentation):
 
     def __init__(self, size, interpolation=Image.BICUBIC):
-        super().__init__()
         self.size = size
         self.interpolation = interpolation
+        # self.toTensor = transforms.ToTensor()
 
     def __call__(self, img):
         img = img.resize(self.size, self.interpolation)
@@ -285,6 +450,7 @@ class ResizeNormalize(MyAugmentation):
 class NormalizePAD(MyAugmentation):
 
     def __init__(self, max_size, PAD_type='right'):
+        # self.toTensor = transforms.ToTensor()
         super().__init__()
         self.max_size = max_size
         self.max_width_half = math.floor(max_size[2] / 2)
@@ -304,10 +470,11 @@ class NormalizePAD(MyAugmentation):
 
 class AlignCollate(object):
 
-    def __init__(self, imgH=32, imgW=100, keep_ratio_with_pad=False):
+    def __init__(self, imgH=32, imgW=100, keep_ratio_with_pad=False, opt=None):
         self.imgH = imgH
         self.imgW = imgW
         self.keep_ratio_with_pad = keep_ratio_with_pad
+        self.opt = opt
 
     def __call__(self, batch):
         batch = filter(lambda x: x is not None, batch)
@@ -334,9 +501,21 @@ class AlignCollate(object):
             image_tensors = torch.cat([t.unsqueeze(0) for t in resized_images], 0)
 
         else:
-            transform = ResizeNormalize((self.imgW, self.imgH))
+            transform = DataAugment(self.opt)
+            #i = 0
+            #for image in images:
+            #    transform(image)
+            #    if i == 1:
+            #        exit(0)
+            #    else: 
+            #        i = i + 1
             image_tensors = [transform(image) for image in images]
             image_tensors = torch.cat([t.unsqueeze(0) for t in image_tensors], 0)
+        
+        #else:
+        #    transform = ResizeNormalize((self.imgW, self.imgH))
+        #    image_tensors = [transform(image) for image in images]
+        #    image_tensors = torch.cat([t.unsqueeze(0) for t in image_tensors], 0)
 
         return image_tensors, labels
 
