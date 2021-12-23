@@ -1,5 +1,7 @@
+cython
 numpy
 pyyaml
 streamlit
 streamlit_cropper
 requests
+gcloud
