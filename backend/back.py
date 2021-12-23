@@ -41,8 +41,7 @@ async def get_prediction(files: List[UploadFile] = File(...)):
 
 def main():
     import uvicorn
-#    uvicorn.run("back:app", host="0.0.0.0", port=8501, reload=True)
-    uvicorn.run("back:app", host="0.0.0.0", port=6006, reload=True)
+    uvicorn.run("back:app", host="0.0.0.0", port=8501, reload=True)
 
 
 if __name__ == "__main__":
