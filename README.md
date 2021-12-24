@@ -170,12 +170,10 @@
 
   ![일반적인 케이스들](https://user-images.githubusercontent.com/87659486/147353296-4b769142-db10-4f2d-82e0-97eec24078fd.jpg)
 
-  
 
 * Edge Case
 
-  ![edgecase](https://user-images.githubusercontent.com/87659486/147354201-7555ec05-96db-4951-bfe3-6a5bc68d6b93.jpg)
-
+  ![edgecase](https://user-images.githubusercontent.com/87659486/147354772-91c44eeb-68c8-42a0-a09e-c579edc1b2ac.jpg)
   
 
 ## :eight: 프로토타입
