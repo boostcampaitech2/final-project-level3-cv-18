@@ -168,7 +168,7 @@
 
 * 일반적인 경우
 
-  ![일반적인 케이스들](https://user-images.githubusercontent.com/87659486/147353296-4b769142-db10-4f2d-82e0-97eec24078fd.jpg)
+  ![general cases](https://user-images.githubusercontent.com/87659486/147409826-a2ea9f44-c2c7-49e9-bea8-297f2e475f23.png)
 
 
 * Edge Case
