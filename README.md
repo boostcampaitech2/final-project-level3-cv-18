@@ -188,6 +188,9 @@
 * 구현 데모 페이지
   * with GPU: http://49.50.172.150:6012/ (21.12.24. 이후로는 사용 불가)
   * with CPU: http://34.64.74.230:8501/ (GCP 무료 크레딧이 종료되는 22.03. 이후 사용 불가)
+  ![프로토타입1](https://user-images.githubusercontent.com/87659486/147622892-c024b517-b5cc-40f3-a1a8-f364b6ed104c.jpg)
+  ![프로토타입2](https://user-images.githubusercontent.com/87659486/147622895-47664a6a-d671-4a10-be03-5d6f3203e22e.jpg)
+
 
 ## :nine: Future Works
 
