@@ -214,8 +214,8 @@
 |  이름  | 캠퍼 ID | Github                                        | 역할                                                         | 비고 |
 | :----: | :-----: | --------------------------------------------- | ------------------------------------------------------------ | :--: |
 | 김서기 |  T2035  | [*Link*](https://github.com/seogi98)          | **백엔드 (GCP, 네이버 검색API 연결)**, 모델 실험, <br />프론트엔드(Streamlit), 데이터 수집 및 라벨링 |      |
-| 김승훈 |  T2042  | [*Link*](https://github.com/lead-me-read-me)  | **데이터**, **모델 실험 (TRBA)**, 베이스라인 구축, <br />백엔드(FastAPI, GCP), 데이터 수집 및 라벨링 |      |
+| 김승훈 |  T2042  | [*Link*](https://github.com/lead-me-read-me)  | **데이터**, **모델 실험 (TRBA)**, 베이스라인 구축, <br />백엔드(FastAPI, GCP), 데이터 생성, 데이터 수집 및 라벨링 |      |
 | 배민한 |  T2260  | [*Link*](https://github.com/Minhan-Bae)       | **PM**, 모델 실험, 프론트엔드 (Streamlit), 데이터 수집 및 라벨링 |      |
-| 손지아 |  T2113  | [*Link*](https://github.com/oikosohn)         | **EDA**, **모델 실험**, 베이스라인 구축, 프론트엔드 (Streamlit), <br />데이터 관리, 데이터 생성, , 데이터 수집 및 라벨링 |      |
+| 손지아 |  T2113  | [*Link*](https://github.com/oikosohn)         | **EDA**, **모델 실험**, 베이스라인 구축, 프론트엔드 (Streamlit), <br />데이터 관리, 데이터 생성, 데이터 수집 및 라벨링 |      |
 | 이상은 |  T2157  | [*Link*](https://github.com/lisy0123)         | **논문 리서치**, 목업 디자인, 데이터 수집 및 라벨링          | 퇴소 |
 | 조익수 |  T2213  | [*Link*](https://github.com/projectcybersyn2) | **모델 분석 및 실험 (TRBA, ViTSTR)**, <br />프론트엔드(Streamlit), 데이터 수집 및 라벨링 |      |
