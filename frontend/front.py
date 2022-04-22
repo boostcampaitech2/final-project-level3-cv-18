@@ -4,15 +4,11 @@ from streamlit_cropper import st_cropper
 
 import io
 import os
-import yaml
 import time
-import argparse
 import requests
 
-import numpy as np
 from PIL import Image
 
-from confirm_button_hack import cache_on_button_press
 from utils import send_to_bucket,get_naver_api
 from uuid import uuid1
 from datetime import datetime
@@ -37,10 +33,10 @@ def get_inference(files):
     letency = end-start
     return response, letency
 
+
 def main():
 
     st.title(":athletic_shoe: Shoes product number OCR!!")
-
 
     st.header("Uploaded Image")
     uploaded_file = st.sidebar.file_uploader("Choose an image", type=["jpg", "jpeg","png"])
@@ -49,6 +45,7 @@ def main():
     aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=["Free"])
     aspect_dict = {"Free": None}
     aspect_ratio = aspect_dict[aspect_choice]
+    rotation = st.sidebar.radio('이미지 회전 :', ['원본', '오른쪽으로 90도 회전','왼쪽으로 90도 회전','180도 회전'])
 
     if uploaded_file:
         image_bytes = uploaded_file.getvalue()
@@ -59,35 +56,56 @@ def main():
 
         # Manipulate cropped image at will
         st.write("Preview")
-        st.image(cropped_img)
+        col1, col2 = st.columns([0.5, 0.5])
+        with col1:
+            st.markdown('<p style="text-align: center;">Before</p>', unsafe_allow_html=True)
+            st.image(cropped_img, caption='크롭한 이미지')
 
-        # 모델에 이미지 입력
-        cropped_img_byte = io.BytesIO()
-        cropped_img.save(cropped_img_byte, format='PNG')
-        cropped_img_byte = cropped_img_byte.getvalue()
-        st.write("Classifying...")
-        files = [('files', (uploaded_file.name, cropped_img_byte, uploaded_file.type))]
+        with col2:
+            st.markdown('<p style="text-align: center;">After</p>', unsafe_allow_html=True)
+            
+            if rotation == '원본':
+                st.image(cropped_img, caption='원본')
+            elif rotation == '왼쪽으로 90도 회전':
+                cropped_img = cropped_img.rotate(90)
+                st.image(cropped_img, caption='왼쪽으로 90도 회전')
+            elif rotation == '오른쪽으로 90도 회전':
+                cropped_img = cropped_img.rotate(270)
+                st.image(cropped_img, caption='오른쪽으로 90도 회전')
+            elif rotation == '180도 회전':
+                cropped_img = cropped_img.rotate(180)
+                st.image(cropped_img, caption='180도 회전')
 
-        response, letency = get_inference(files)
-        st.write(response.status_code)
-        label, confidence_score = response.json().values()
-        st.write(response.json())
+        submmit = st.sidebar.button(label='제출')
+        
+        if submmit:
+            # 모델에 이미지 입력
+            cropped_img_byte = io.BytesIO()
+            cropped_img.save(cropped_img_byte, format='PNG')
+            cropped_img_byte = cropped_img_byte.getvalue()
+            st.write("Classifying...")
+            files = [('files', (uploaded_file.name, cropped_img_byte, uploaded_file.type))]
 
-        # 추론 결과 반영
+            response, letency = get_inference(files)
+            st.write(response.status_code)
+            label, confidence_score = response.json().values()
+            st.write(response.json())
 
-        st.subheader(f'label is {label}, {confidence_score}')
-        st.write(f"inference time : {letency:.2f}second")
-        st.subheader("is product code incorrected?")
-        label = st.text_input("input correct product code",label)
+            # 추론 결과 반영
 
-        # naver api 정보 가져오기
-        with st.expander("상품 정보 확인하기"):
-             get_item_info = get_naver_api(label = label)
-             if get_item_info == "Not Exist":
-                 st.write("Can't find product")
-             else :
-                 product_info_print(get_item_info)
-                 send_to_bucket(image_id=uuid1(),label = label,image_bytes=cropped_img_byte,date=datetime.now())
+            st.subheader(f'label is {label}, {confidence_score}')
+            st.write(f"inference time : {letency:.2f}second")
+            st.subheader("is product code incorrected?")
+            label = st.text_input("input correct product code",label)
+
+            # naver api 정보 가져오기
+            with st.expander("상품 정보 확인하기"):
+                get_item_info = get_naver_api(label = label)
+                if get_item_info == "Not Exist":
+                    st.write("Can't find product")
+                else :
+                    product_info_print(get_item_info)
+                    send_to_bucket(image_id=uuid1(),label = label,image_bytes=cropped_img_byte,date=datetime.now())
 
 
 
